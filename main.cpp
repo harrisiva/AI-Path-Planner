@@ -69,10 +69,20 @@ vector<int> getrendezvous(vector<string>lines,int N){
     return R;
 }
 
-vector<vector<int>> getboard(vector<string> lines, int N){ // TODO: To fix bug, create the intial board using the dimensions (filled with zeros) and change the location of the zeros to 1's based on the line you are reading
-    // get the board location in a vector (NOTE: MISSES SOME ZEROS)
-    vector<vector<int>> board;
-    // load the lines after 2+N to the size of the lines
+vector<vector<string>> getboard(vector<string> lines, vector<int> dimensions, int N){
+    vector<vector<string>> board;
+    for (int i=3+N;i<lines.size();i++){
+        stringstream strIn (lines[i]);
+        vector<string> row;
+        while (!strIn.fail()){
+            string line;
+            int value;
+            strIn>>line;
+            if (line.size()!=0){row.push_back(line);}
+        } board.push_back(row);
+    }
+    /*
+    // Code to get a 2d vector holding int types
     for (int i=3+N;i<lines.size();i++){
         vector<int> inner;
         stringstream strIn(lines[i]);
@@ -83,7 +93,9 @@ vector<vector<int>> getboard(vector<string> lines, int N){ // TODO: To fix bug, 
                 inner.push_back(stoi(c));
             }
         } board.push_back(inner);
-    } return board;
+    }*/
+
+    return board;
 }
 
 int main(){
@@ -94,7 +106,7 @@ int main(){
     int N; N=stoi(lines[1]); // get the number of robots
     map<int,vector<int>> coordinates = getcoordinates(lines,N);
     vector<int> R = getrendezvous(lines,N);
-    vector<vector<int>> board = getboard(lines,N);
+    vector<vector<string>> board = getboard(lines,dimensions,N); // NOTE: Strings, need to convert for easy evaluation
 
     // print the data here (conversion from py to cpp for setting up)
     cout<<"Dimensions: "<<dimensions[0]<<" "<<dimensions[1]<<endl; // use printf
