@@ -7,10 +7,7 @@
 #include <sstream>
 using namespace std;
 
-int main(){
-    // read lines from the input file
-    string filename; filename="input.txt";
-    
+vector<string> getlines(string filename){
     // read the file lines by opening the file object
     vector<string> lines;
     fstream file;
@@ -20,7 +17,10 @@ int main(){
         while (getline(file,line)){
             lines.push_back(line);}
     }
+    return lines;
+}
 
+vector<int> getdimensions(vector<string>lines){
     // get the dimensions from the first line and add it to the vector dimensions
     vector<int> dimensions;
     stringstream StrIn(lines[0]);
@@ -31,11 +31,13 @@ int main(){
             dimensions.push_back(stoi(c));
         }
     }
-    
-    int N; N=stoi(lines[1]); // get the number of robots
+    return dimensions;
+}
 
-    // get the coordinates for the robots as dictionaries
-    map<int,vector<int>> coordinates;
+map<int,vector<int>> getcoordinates(vector<string>lines,int N){
+    // get the coordinates for the robots as a dictionary (indexed by the robot number)
+    map<int,vector<int>> coordinates; // to return
+
     vector<vector<int>> coordinatesVector; // create a temp coordinatesVector for initial access (is this faster?)
     for(int r=N;r<N+N;r++){
         stringstream strIn(lines[r]); vector<int> coordinate;
@@ -53,7 +55,10 @@ int main(){
             coordinates[i].push_back(coordinatesVector[i][j]);
         }
     }
-    
+    return coordinates;
+}
+
+vector<int> getrendezvous(vector<string>lines,int N){
     // Get the rendezvous location
     vector<int> R;
     stringstream strIn(lines[2+N]);
@@ -61,7 +66,10 @@ int main(){
         string line; strIn>>line;
         if (line.size()!=0){R.push_back(stoi(line));}
     }
+    return R;
+}
 
+vector<vector<int>> getboard(vector<string> lines, int N){ // TODO: To fix bug, create the intial board using the dimensions (filled with zeros) and change the location of the zeros to 1's based on the line you are reading
     // get the board location in a vector (NOTE: MISSES SOME ZEROS)
     vector<vector<int>> board;
     // load the lines after 2+N to the size of the lines
@@ -75,8 +83,18 @@ int main(){
                 inner.push_back(stoi(c));
             }
         } board.push_back(inner);
-    }
+    } return board;
+}
 
+int main(){
+    // read lines from the input file
+    string filename; filename="input.txt";
+    vector<string> lines = getlines(filename);
+    vector<int> dimensions = getdimensions(lines);   
+    int N; N=stoi(lines[1]); // get the number of robots
+    map<int,vector<int>> coordinates = getcoordinates(lines,N);
+    vector<int> R = getrendezvous(lines,N);
+    vector<vector<int>> board = getboard(lines,N);
 
     // print the data here (conversion from py to cpp for setting up)
     cout<<"Dimensions: "<<dimensions[0]<<" "<<dimensions[1]<<endl; // use printf
