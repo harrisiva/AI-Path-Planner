@@ -36,17 +36,64 @@ int main(){
 
     // get the coordinates for the robots as dictionaries
     map<int,vector<int>> coordinates;
+    vector<vector<int>> coordinatesVector; // create a temp coordinatesVector for initial access (is this faster?)
+    for(int r=N;r<N+N;r++){
+        stringstream strIn(lines[r]); vector<int> coordinate;
+        // load the current lines coordinate into the internal coordinate vector
+        while (!strIn.fail()){
+            string line;
+            strIn >> line;
+            if (line.size()!=0){coordinate.push_back(stoi(line));}
+        } coordinatesVector.push_back(coordinate);// push the coordinate vector retrived from the current line to the coordinatesVector 
+    }
+
+    // move coordinates to the map for faster access
+    for (int i=0;i<coordinatesVector.size();i++){
+        for (int j=0;j<coordinatesVector[i].size();j++){
+            coordinates[i].push_back(coordinatesVector[i][j]);
+        }
+    }
     
-    vector<int> coordinate; // should be inside the loop
-    coordinate.push_back(1);
-    coordinate.push_back(2);
-    coordinates[0] = coordinate;
+    // Get the rendezvous location
+    vector<int> R;
+    stringstream strIn(lines[2+N]);
+    while (!strIn.fail()){
+        string line; strIn>>line;
+        if (line.size()!=0){R.push_back(stoi(line));}
+    }
+
+    // get the board location in a vector (NOTE: MISSES SOME ZEROS)
+    vector<vector<int>> board;
+    // load the lines after 2+N to the size of the lines
+    for (int i=3+N;i<lines.size();i++){
+        vector<int> inner;
+        stringstream strIn(lines[i]);
+        while (!strIn.fail()){
+            string c;
+            strIn>>c;
+            if (c.size()!=0){
+                inner.push_back(stoi(c));
+            }
+        } board.push_back(inner);
+    }
 
 
     // print the data here (conversion from py to cpp for setting up)
-    for (int i=0;i<dimensions.size();i++){
-        cout<<dimensions[i]<<endl;
+    cout<<"Dimensions: "<<dimensions[0]<<" "<<dimensions[1]<<endl; // use printf
+    cout<<"Number of Robots: "<<N<<endl;
+    cout<<"Robots initial location: "<<endl;
+    for (int i=0;i<coordinates.size();i++){
+        for (int j=0;j<coordinates[i].size();j+=2){
+            cout << "\tRobot "<< i << "'s coordinate: " << coordinates[i][j] <<","<<coordinates[i][j+1] << endl;
+        }
     }
-    cout<<N<<endl;
+    cout<<"Rendezvous location: "<<R[0]<<" "<<R[1]<<endl; 
+    cout<<"Board:"<<endl;
+    for (int i=0;i<board.size();i++){
+        for (int j=0;j<board[i].size();j++){
+            cout<<board[i][j];
+        }
+        cout<<endl;
+    }
     return 0;
 }
