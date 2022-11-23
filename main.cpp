@@ -127,8 +127,10 @@ int main(){
         }
     }
     cout<<"Rendezvous location: "<<R[0]<<" "<<R[1]<<endl; 
-    cout<<"Board:"<<endl;
-    viewboard(board);
+    //board[0].at(0) = "R";
+
+    // Set the R location as R in the board by using vector indexing
+    // Since they're cartesian coordinates
 
     // A* logic for this board
     // Solve one robot at a time
