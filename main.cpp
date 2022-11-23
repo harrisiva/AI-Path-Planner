@@ -69,7 +69,7 @@ vector<int> getrendezvous(vector<string>lines,int N){
     return R;
 }
 
-void viewboard(vector<vector<string>> board){
+void viewboard(vector<vector<char>> board){
     for (int i=0;i<board.size();i++){
         for (int j=0;j<board[i].size();j++){
             cout<<board[i][j];
@@ -78,33 +78,14 @@ void viewboard(vector<vector<string>> board){
     } return;
 }
 
-vector<vector<string>> getboard(vector<string> lines, vector<int> dimensions, int N){
-    vector<vector<string>> board;
+vector<vector<char>> getboard(vector<string> lines, vector<int> dimensions, int N){
+    vector<vector<char>> board; // Initialize a vector for the board
     for (int i=3+N;i<lines.size();i++){
-        stringstream strIn (lines[i]);
-        vector<string> row;
-        while (!strIn.fail()){
-            string line;
-            int value;
-            strIn>>line;
-            if (line.size()!=0){row.push_back(line);}
-        } board.push_back(row);
-    }
-    /*
-    // Code to get a 2d vector holding int types
-    for (int i=3+N;i<lines.size();i++){
-        vector<int> inner;
-        stringstream strIn(lines[i]);
-        while (!strIn.fail()){
-            string c;
-            strIn>>c;
-            if (c.size()!=0){
-                inner.push_back(stoi(c));
-            }
-        } board.push_back(inner);
-    }*/
-
-    return board;
+        if (lines[i].size()!=0){
+            vector<char> line(lines[i].begin(),lines[i].end());
+            board.push_back(line);
+        }
+    } return board;
 }
 
 int main(){
@@ -115,7 +96,7 @@ int main(){
     int N; N=stoi(lines[1]); // get the number of robots
     map<int,vector<int>> coordinates = getcoordinates(lines,N);
     vector<int> R = getrendezvous(lines,N);
-    vector<vector<string>> board = getboard(lines,dimensions,N); // NOTE: Strings, need to convert for easy evaluation
+    vector<vector<char>> board = getboard(lines,dimensions,N); // NOTE: Strings, need to convert for easy evaluation
 
     // print the data here (conversion from py to cpp for setting up)
     cout<<"Dimensions: "<<dimensions[0]<<" "<<dimensions[1]<<endl; // use printf
@@ -127,7 +108,7 @@ int main(){
         }
     }
     cout<<"Rendezvous location: "<<R[0]<<" "<<R[1]<<endl; 
-    //board[0].at(0) = "R";
+    cout << "Board: " << endl;
 
     // Set the R location as R in the board by using vector indexing
     // Since they're cartesian coordinates
