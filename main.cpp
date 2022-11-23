@@ -70,7 +70,12 @@ vector<int> getrendezvous(vector<string>lines,int N){
 }
 
 void viewboard(vector<vector<string>> board){
-    return;
+    for (int i=0;i<board.size();i++){
+        for (int j=0;j<board[i].size();j++){
+            cout<<board[i][j];
+        }
+        cout<<endl;
+    } return;
 }
 
 vector<vector<string>> getboard(vector<string> lines, vector<int> dimensions, int N){
@@ -123,12 +128,7 @@ int main(){
     }
     cout<<"Rendezvous location: "<<R[0]<<" "<<R[1]<<endl; 
     cout<<"Board:"<<endl;
-    for (int i=0;i<board.size();i++){
-        for (int j=0;j<board[i].size();j++){
-            cout<<board[i][j];
-        }
-        cout<<endl;
-    }
+    viewboard(board);
 
     // A* logic for this board
     // Solve one robot at a time
