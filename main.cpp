@@ -69,6 +69,10 @@ vector<int> getrendezvous(vector<string>lines,int N){
     return R;
 }
 
+void viewboard(vector<vector<string>> board){
+    return;
+}
+
 vector<vector<string>> getboard(vector<string> lines, vector<int> dimensions, int N){
     vector<vector<string>> board;
     for (int i=3+N;i<lines.size();i++){
@@ -125,5 +129,12 @@ int main(){
         }
         cout<<endl;
     }
+
+    // A* logic for this board
+    // Solve one robot at a time
+    // Add the robot to the board and keep track of its location (use a unique character to represent its location)
+    // define a goal state:
+        // the unique character representing the robot in the R location
+
     return 0;
 }
