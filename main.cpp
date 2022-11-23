@@ -88,6 +88,15 @@ vector<vector<char>> getboard(vector<string> lines, vector<int> dimensions, int 
     } return board;
 }
 
+vector<int> cordconvert(vector<int> coordinate, vector<int> dimensions){ // TODO: Pass by reference
+    int max_y; vector<int> convertedCord;
+    max_y = dimensions[0]-1;
+
+    convertedCord.push_back(max_y-coordinate[1]); // row 
+    convertedCord.push_back(coordinate[0]); // keep x (col) the same as it is parallel
+    return convertedCord;
+}
+
 int main(){
     // read lines from the input file
     string filename; filename="input.txt";
@@ -108,10 +117,11 @@ int main(){
         }
     }
     cout<<"Rendezvous location: "<<R[0]<<" "<<R[1]<<endl; 
-    cout << "Board: " << endl;
-
-    // Set the R location as R in the board by using vector indexing
-    // Since they're cartesian coordinates
+    //cout << "Board: " << endl;
+    
+    cout << "Current R coordinate: " << R[0] << ", " << R[1] << endl;
+    vector<int> coord = cordconvert(R,dimensions);
+    cout << "Converted R coordinate: " << coord[0] << ", " << coord[1] << endl;
 
     // A* logic for this board
     // Solve one robot at a time
