@@ -32,7 +32,7 @@ public: // Public variables
     vector<Node> children;
     // need to keep track of the costs as integers
     // pcost (cost evaluted from the parent)
-    int pcost; int hcost;
+    int pcost; int hcost; int gcost;
     // hcost (cost evaluted from the heuristic)
 
 public: // Public methods
@@ -48,6 +48,8 @@ public: // Public methods
         // calcualte and set the hcost
         // set the pcost as parent.p_cost + 1
         pcost = ((*parent).pcost)+1;
+        hcost = 0; // SET BY CALLING THE HEURISTIC FUNCTION
+        gcost = pcost + hcost;
         return;
     }
     
@@ -86,6 +88,32 @@ public: // Public methods
 
 };
 
+void inSort(vector<Node*>*nodes)
+{
+    int n=(*nodes).size(); // n is the size
+    int i,j; // i and j are for index purposes
+    int k; // holds the gcost of the current index's node
+
+    // currently, k is the value at the index i
+    // we need k to be the gcost of the node at index i
+    // shifts of each will be performed based on this
+    for (i = 1; i < n; i++) 
+    {  
+        k = (*((*nodes)[i])).gcost; // set k to be the gcost of the current node
+        Node *node_at_original_i = ((*nodes)[i]);
+        j = i - 1; // j to be the previous index
+        /*Move elements of arr[0..i-1], that are  
+        greater than k, to one position ahead  
+        of their current position */
+        while (j >= 0 && (*((*nodes)[i])).gcost > k) // if the gcost of the previous node is greater than the current node 
+        {  
+            (*nodes)[j + 1] = (*nodes)[j];  // change the current node to the previous node
+            j = j - 1;
+        }  
+        (*nodes)[j + 1] = node_at_original_i; // k is node that was previously at i  
+    }  
+}
+
 class PriorityQueue{
 public: // Public Variables
     vector<Node*> nodes;
@@ -109,6 +137,9 @@ public: // Public Methods
 
     void insert(Node *node){ // TODO: Needs to insert and sort based on the g_cost
         nodes.push_back(node);
+        // set the index based on the g_cost
+        // lowest g_cost at the front
+        // highest g_cost at the end
         return;
     }
 
@@ -276,6 +307,10 @@ int main(){
     for (int i=0;i<initial.children.size();i++){
         initial.children[i].print();
     }
+
+    // TESTING INSORT WITH NODES (includes double references)
+    vector<Node*> nodes;
+    // Create null nodes with fake p_costs 
     
     // A* logic for this board
     // Solve one robot at a time

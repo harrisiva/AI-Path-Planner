@@ -9,6 +9,7 @@
         "iosfwd": "cpp",
         "map": "cpp",
         "xutility": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "cstdio": "cpp"
     }
 }
