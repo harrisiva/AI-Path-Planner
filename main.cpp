@@ -34,7 +34,16 @@ vector<int> getdimensions(vector<string>lines){
     return dimensions;
 }
 
-map<int,vector<int>> getcoordinates(vector<string>lines,int N){
+vector<int> cordconvert(vector<int> coordinate, vector<int> dimensions){ // TODO: Pass by reference
+    int max_y; vector<int> convertedCord;
+    max_y = dimensions[0]-1;
+
+    convertedCord.push_back(max_y-coordinate[1]); // row 
+    convertedCord.push_back(coordinate[0]); // keep x (col) the same as it is parallel
+    return convertedCord;
+}
+
+map<int,vector<int>> getcoordinates(vector<string>lines,int N,vector<int> dimensions){
     // get the coordinates for the robots as a dictionary (indexed by the robot number)
     map<int,vector<int>> coordinates; // to return
 
@@ -46,7 +55,9 @@ map<int,vector<int>> getcoordinates(vector<string>lines,int N){
             string line;
             strIn >> line;
             if (line.size()!=0){coordinate.push_back(stoi(line));}
-        } coordinatesVector.push_back(coordinate);// push the coordinate vector retrived from the current line to the coordinatesVector 
+        } 
+        coordinate = cordconvert(coordinate,dimensions);
+        coordinatesVector.push_back(coordinate);// push the coordinate vector retrived from the current line to the coordinatesVector 
     }
 
     // move coordinates to the map for faster access
@@ -58,7 +69,7 @@ map<int,vector<int>> getcoordinates(vector<string>lines,int N){
     return coordinates;
 }
 
-vector<int> getrendezvous(vector<string>lines,int N){
+vector<int> getrendezvous(vector<string>lines,int N, vector<int> dimensions){
     // Get the rendezvous location
     vector<int> R;
     stringstream strIn(lines[2+N]);
@@ -66,6 +77,7 @@ vector<int> getrendezvous(vector<string>lines,int N){
         string line; strIn>>line;
         if (line.size()!=0){R.push_back(stoi(line));}
     }
+    R = cordconvert(R, dimensions);
     return R;
 }
 
@@ -88,14 +100,6 @@ vector<vector<char>> getboard(vector<string> lines, vector<int> dimensions, int 
     } return board;
 }
 
-vector<int> cordconvert(vector<int> coordinate, vector<int> dimensions){ // TODO: Pass by reference
-    int max_y; vector<int> convertedCord;
-    max_y = dimensions[0]-1;
-
-    convertedCord.push_back(max_y-coordinate[1]); // row 
-    convertedCord.push_back(coordinate[0]); // keep x (col) the same as it is parallel
-    return convertedCord;
-}
 
 int main(){
     // read lines from the input file
@@ -103,8 +107,8 @@ int main(){
     vector<string> lines = getlines(filename);
     vector<int> dimensions = getdimensions(lines);   
     int N; N=stoi(lines[1]); // get the number of robots
-    map<int,vector<int>> coordinates = getcoordinates(lines,N);
-    vector<int> R = getrendezvous(lines,N);
+    map<int,vector<int>> coordinates = getcoordinates(lines,N, dimensions);
+    vector<int> R = getrendezvous(lines,N,dimensions);
     vector<vector<char>> board = getboard(lines,dimensions,N); // NOTE: Strings, need to convert for easy evaluation
 
     // print the data here (conversion from py to cpp for setting up)
@@ -117,11 +121,14 @@ int main(){
         }
     }
     cout<<"Rendezvous location: "<<R[0]<<" "<<R[1]<<endl; 
-    //cout << "Board: " << endl;
-    
-    cout << "Current R coordinate: " << R[0] << ", " << R[1] << endl;
-    vector<int> coord = cordconvert(R,dimensions);
-    cout << "Converted R coordinate: " << coord[0] << ", " << coord[1] << endl;
+    // set the robot locations as B (bot) and the rendezvous as R
+    board[R[0]][R[1]] = 'R';
+    for (int i=0;i<coordinates.size();i++){
+        board[coordinates[i][0]][coordinates[i][1]] = 'B';
+    }
+    // view the board
+    cout << "Board: " << endl;
+    viewboard(board);
 
     // A* logic for this board
     // Solve one robot at a time
