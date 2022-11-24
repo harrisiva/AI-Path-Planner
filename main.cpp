@@ -7,6 +7,13 @@
 #include <sstream>
 using namespace std;
 
+vector<vector<int>> shifts{
+    {-1,0}, // up
+    {+1,0}, // down
+    {0,-1}, // left
+    {0,+1}, // right
+};
+
 void viewboard(vector<vector<char>> board){
     for (int i=0;i<board.size();i++){
         for (int j=0;j<board[i].size();j++){
@@ -140,6 +147,24 @@ vector<vector<char>> getboard(vector<string> lines, vector<int> dimensions, int 
     } return board;
 }
 
+void expand(Node *initial){
+    vector<vector<int>> valid_shifts;
+    // to check if valid (and create a list of valif shifts), check if the val at shift is 0 or R, all other values are rejected
+    for (int i=0;i<shifts.size();i++){
+        vector<int> shift = shifts[i];
+        Node initial_clone = *initial;
+        int new_i; int new_j; 
+        new_i = ((*initial).coordinate[0])+(shift[0]); 
+        new_j= ((*initial).coordinate[1])+(shift[1]);
+        char var_at_new_coordinate = (*initial).state[new_i][new_j];
+        if (var_at_new_coordinate =='0' || var_at_new_coordinate=='R'){
+            // create the new node and set the parent and children relation
+            initial_clone.move(shift);
+            Node child = Node(initial_clone.state,initial_clone.coordinate,initial);
+            (*initial).children.push_back(child);
+        }
+    } return;
+}
 
 int main(){
     // read lines from the input file
@@ -147,7 +172,7 @@ int main(){
     vector<string> lines = getlines(filename);
     vector<int> dimensions = getdimensions(lines);   
     int N; N=stoi(lines[1]); // get the number of robots
-    map<int,vector<int>> coordinates = getcoordinates(lines,N, dimensions);
+    map<int,vector<int>> coordinates = getcoordinates(lines,N,dimensions);
     vector<int> R = getrendezvous(lines,N,dimensions);
     vector<vector<char>> board = getboard(lines,dimensions,N); // NOTE: Strings, need to convert for easy evaluation
 
@@ -171,37 +196,13 @@ int main(){
     Node null_node = Node();
     Node initial = Node(board,coordinates[1],&null_node); // For the first initial node
     initial.print();
-
-    // function that generates valid moves based shifts for given state and coordinate of robot
-    vector<vector<int>> valid_shifts;
-    vector<vector<int>> shifts{
-        {-1,0}, // up
-        {+1,0}, // down
-        {0,-1}, // left
-        {0,+1}, // right
-    };
-    // to check if valid (and create a list of valif shifts), check if the val at shift is 0 or R, all other values are rejected
-    for (int i=0;i<shifts.size();i++){
-        vector<int> shift = shifts[i];
-        Node initial_clone = initial;
-        int new_i; int new_j; 
-        new_i = (initial.coordinate[0])+(shift[0]); 
-        new_j= (initial.coordinate[1])+(shift[1]);
-        char var_at_new_coordinate = initial.state[new_i][new_j];
-        if (var_at_new_coordinate =='0' || var_at_new_coordinate=='R'){
-            // create the new node and set the parent and children relation
-            initial_clone.move(shift);
-            Node child = Node(initial_clone.state,initial_clone.coordinate,&initial);
-            initial.children.push_back(child);
-        }
-    }
-
+    expand(&initial);
+    
     cout << "Children" << endl;
     for (int i=0;i<initial.children.size();i++){
         initial.children[i].print();
     }
     
-
     // A* logic for this board
     // Solve one robot at a time
     // Add the robot to the board and keep track of its location (use a unique character to represent its location)
