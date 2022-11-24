@@ -113,7 +113,11 @@ public: // Public Methods
     }
 
     Node pop(){ // TODO: Pop the front node and remove it from the PQ
-        return Node();
+        cout << nodes.size() << endl;
+        Node first = *nodes[0];
+        nodes.erase(nodes.begin());
+        cout << nodes.size() << endl;
+        return first;
     }
 
     void print(){ // TODO: Print the details and the nodes
