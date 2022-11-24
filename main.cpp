@@ -30,17 +30,24 @@ public: // Public variables
     vector<int> coordinate;
     Node *parent;
     vector<Node> children;
+    // need to keep track of the costs as integers
+    // pcost (cost evaluted from the parent)
+    int pcost; int hcost;
+    // hcost (cost evaluted from the heuristic)
 
 public: // Public methods
 
     // Default null constructor
-    Node(){return;}
+    Node(){pcost=-1;return;}
 
     // Default working constructor (Initialize the node with the given state, robot location/coordinate given)
     Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent){ 
         coordinate = u_coordinate;
         state = u_state;
         parent = u_parent;
+        // calcualte and set the hcost
+        // set the pcost as parent.p_cost + 1
+        pcost = ((*parent).pcost)+1;
         return;
     }
     
@@ -57,7 +64,7 @@ public: // Public methods
 
     void print(){
         viewboard(state);
-        cout << endl;
+        cout << "p_cost:" << pcost << endl;
         return;
     }
 
@@ -105,11 +112,11 @@ public: // Public Methods
         return;
     }
 
-    Node pop(){
+    Node pop(){ // TODO: Pop the front node and remove it from the PQ
         return Node();
     }
 
-    void print(){
+    void print(){ // TODO: Print the details and the nodes
         return;
     }
 };
