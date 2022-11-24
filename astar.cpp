@@ -16,22 +16,17 @@ public: // Public variables
 
 public: // Public methods
 
-    // Default constructor
-    Node(vector<vector<char>>state, vector<int> coordinate){ 
-        // Keep track of the coordinate for this bot
+    // Default constructor (Initialize the node with the given state, robot location/coordinate given)
+    Node(vector<vector<char>>u_state, vector<int> u_coordinate){ 
+        coordinate = u_coordinate;
+        state = u_state;
         return;
     }
     
-    // Function to return the children of the current bot based on the valid moves
-    void expand(){
-        // Call a function for deriving children
-        // Pass the current state and coordinate
-        // Return the children (type node with parent set)
-        return;
-    } 
-
-    void compare(){
-        // compares if this nodes state is the same as the given state
+    void move(vector<int>shift){ // just adjust the coordinate and state of this node's public variable
+        int val_at_shift_position = state[((coordinate[0])+shift[0])][((coordinate[1])+shift[1])];
+        state[((coordinate[0])+shift[0])][((coordinate[1])+shift[1])]='B';
+        state[((coordinate[0])+shift[0])][((coordinate[1])+shift[1])] = val_at_shift_position;
         return;
     }
 
@@ -43,6 +38,9 @@ public: // Public methods
 };
 
 int main(){
+    int x; x=-1;
+    int y;y=1;
+    cout << y+x << endl;
 // required:
     // frontier: priority queue structure (or vector with insort)
     // explored set: vector

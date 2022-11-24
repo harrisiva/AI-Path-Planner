@@ -7,6 +7,55 @@
 #include <sstream>
 using namespace std;
 
+void viewboard(vector<vector<char>> board){
+    for (int i=0;i<board.size();i++){
+        for (int j=0;j<board[i].size();j++){
+            cout<<board[i][j];
+        }
+        cout<<endl;
+    } return;
+}
+
+class Node{
+public: // Public variables
+    vector<vector<char>> state;
+    vector<int> coordinate;
+    Node *parent;
+    vector<Node> children;
+
+public: // Public methods
+
+    // Default null constructor
+    Node(){return;}
+
+    // Default working constructor (Initialize the node with the given state, robot location/coordinate given)
+    Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent){ 
+        coordinate = u_coordinate;
+        state = u_state;
+        parent = u_parent;
+        return;
+    }
+    
+    void move(vector<int>shift){ // just adjust the coordinate and state of this node's public variable
+        char val_at_shift_position = state[((coordinate[0])+shift[0])][((coordinate[1])+shift[1])];
+        int i = coordinate[0]+shift[0];
+        int j = coordinate[1]+shift[1];
+        state[i][j] = 'B';
+        state[coordinate[0]][coordinate[1]]=val_at_shift_position;
+        coordinate[0] = i;
+        coordinate[1] = j;
+        return;
+    }
+
+    void print(){
+        viewboard(state);
+        cout << endl;
+        return;
+    }
+
+};
+
+
 vector<string> getlines(string filename){
     // read the file lines by opening the file object
     vector<string> lines;
@@ -81,15 +130,6 @@ vector<int> getrendezvous(vector<string>lines,int N, vector<int> dimensions){
     return R;
 }
 
-void viewboard(vector<vector<char>> board){
-    for (int i=0;i<board.size();i++){
-        for (int j=0;j<board[i].size();j++){
-            cout<<board[i][j];
-        }
-        cout<<endl;
-    } return;
-}
-
 vector<vector<char>> getboard(vector<string> lines, vector<int> dimensions, int N){
     vector<vector<char>> board; // Initialize a vector for the board
     for (int i=3+N;i<lines.size();i++){
@@ -126,9 +166,41 @@ int main(){
     for (int i=0;i<coordinates.size();i++){
         board[coordinates[i][0]][coordinates[i][1]] = 'B';
     }
-    // view the board
-    cout << "Board: " << endl;
-    viewboard(board);
+
+    cout << "simulating A* on the first robot of the test:" << endl;
+    Node null_node = Node();
+    Node initial = Node(board,coordinates[1],&null_node); // For the first initial node
+    initial.print();
+
+    // function that generates valid moves based shifts for given state and coordinate of robot
+    vector<vector<int>> valid_shifts;
+    vector<vector<int>> shifts{
+        {-1,0}, // up
+        {+1,0}, // down
+        {0,-1}, // left
+        {0,+1}, // right
+    };
+    // to check if valid (and create a list of valif shifts), check if the val at shift is 0 or R, all other values are rejected
+    for (int i=0;i<shifts.size();i++){
+        vector<int> shift = shifts[i];
+        Node initial_clone = initial;
+        int new_i; int new_j; 
+        new_i = (initial.coordinate[0])+(shift[0]); 
+        new_j= (initial.coordinate[1])+(shift[1]);
+        char var_at_new_coordinate = initial.state[new_i][new_j];
+        if (var_at_new_coordinate =='0' || var_at_new_coordinate=='R'){
+            // create the new node and set the parent and children relation
+            initial_clone.move(shift);
+            Node child = Node(initial_clone.state,initial_clone.coordinate,&initial);
+            initial.children.push_back(child);
+        }
+    }
+
+    cout << "Children" << endl;
+    for (int i=0;i<initial.children.size();i++){
+        initial.children[i].print();
+    }
+    
 
     // A* logic for this board
     // Solve one robot at a time
