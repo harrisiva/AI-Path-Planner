@@ -23,6 +23,7 @@ void viewboard(vector<vector<char>> board){
     } return;
 }
 
+
 class Node{
 public: // Public variables
     vector<vector<char>> state;
@@ -60,6 +61,57 @@ public: // Public methods
         return;
     }
 
+    bool equals(vector<vector<char>> u_state){
+        if (state.size()==u_state.size()){ // If the size of the state is the same
+            for (int i=0;i<state.size();i++){
+                // if the size of the cols (inner vector) is the same
+                if (state[i].size()==u_state[i].size()){
+                    for (int j=0;j<state[i].size();j++){ // if the elements are the same
+                        if (state[i][j]!=u_state[i][j]){
+                            return false;
+                        }
+                    }
+                } else {return false;}       
+            } 
+            return true;
+        } return false; // if conditions are note met, return false
+    }
+
+};
+
+class PriorityQueue{
+public: // Public Variables
+    vector<Node*> nodes;
+public: // Public Methods
+
+    // default constructor (overrided, no changes)
+    PriorityQueue(){
+        return;
+    }
+
+    bool is_empty(){
+        return (nodes.size()==0);
+    }
+
+    bool contains(Node node){
+        for (int i=0; i<nodes.size(); i++){
+            if (!(*nodes[i]).equals(node.state)){return false;}
+        }
+        return true;
+    }
+
+    void insert(Node *node){
+        nodes.push_back(node);
+        return;
+    }
+
+    Node pop(){
+        return Node();
+    }
+
+    void print(){
+        return;
+    }
 };
 
 
@@ -195,9 +247,20 @@ int main(){
     cout << "simulating A* on the first robot of the test:" << endl;
     Node null_node = Node();
     Node initial = Node(board,coordinates[1],&null_node); // For the first initial node
+    Node test_node = Node(board,coordinates[1],&null_node);
     initial.print();
+    test_node.print();
+    cout << "Testing equals and contains" << endl;
+    cout << initial.equals(test_node.state) << endl;
+    cout << "Testing priority queue contains" << endl;
+    PriorityQueue pq = PriorityQueue();
+    cout << "Insert PQ" << endl;
+    pq.insert(&initial);
+    cout << "Contains PQ" << endl;
+    cout<< pq.contains(initial) << endl;
+
+    cout << "Expand" << endl;
     expand(&initial);
-    
     cout << "Children" << endl;
     for (int i=0;i<initial.children.size();i++){
         initial.children[i].print();
