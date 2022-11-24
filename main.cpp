@@ -107,12 +107,12 @@ public: // Public Methods
         return true;
     }
 
-    void insert(Node *node){
+    void insert(Node *node){ // TODO: Needs to insert and sort based on the g_cost
         nodes.push_back(node);
         return;
     }
 
-    Node pop(){ // TODO: Pop the front node and remove it from the PQ
+    Node pop(){
         cout << nodes.size() << endl;
         Node first = *nodes[0];
         nodes.erase(nodes.begin());
