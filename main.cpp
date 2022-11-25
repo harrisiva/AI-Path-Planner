@@ -94,29 +94,33 @@ public: // Public methods
 
 };
 
-void inSort(vector<Node*>*nodes)
-{
-    int n=(*nodes).size(); // n is the size
-    int i,j; // i and j are for index purposes
-    int k; // holds the gcost of the current index's node
+void inSort(vector<Node*>*nodes) // Currently rearranges the elements's values rather then elements order
+{   
+    // Copy the vector of nodes as a local state
+    // Sort it
+    // Free the memory of the old nodes list
+    // return the new nodes list
 
-    // currently, k is the value at the index i
-    // we need k to be the gcost of the node at index i
-    // shifts of each will be performed based on this
+    
+    int n=(*nodes).size();
+    int i,j;
+    int k; 
     for (i = 1; i < n; i++) 
     {  
-        k = (*((*nodes)[i])).gcost; // set k to be the gcost of the current node
-        Node *node_at_original_i = ((*nodes)[i]);
-        j = i - 1; // j to be the previous index
+        k = (*(*nodes)[i]).gcost;
+        Node original = Node((*(*nodes)[i]).state,(*(*nodes)[i]).coordinate,(*(*nodes)[i]).parent); // get a copy of the node at i
+        cout << "k" << k << endl; 
+        j = i - 1;  
         /*Move elements of arr[0..i-1], that are  
         greater than k, to one position ahead  
         of their current position */
-        while (j >= 0 && (*((*nodes)[i])).gcost > k) // if the gcost of the previous node is greater than the current node 
+        while (j >= 0 && (*(*nodes)[j]).gcost > k) 
         {  
-            (*nodes)[j + 1] = (*nodes)[j];  // change the current node to the previous node
-            j = j - 1;
+            *((*nodes)[j + 1]) = *((*nodes)[j]); // switching variable's value at location in pq
+            j = j - 1;  
         }  
-        (*nodes)[j + 1] = node_at_original_i; // k is node that was previously at i  
+        cout << "j " << j << endl;
+        *((*nodes)[j + 1]) = k; // switching variable's value at location in pq
     }  
 }
 
@@ -141,12 +145,13 @@ public: // Public Methods
         return true;
     }
 
-    void insert(Node *node){ // TODO: Needs to insert and sort based on the g_cost
+    void insert(Node *node){ // Inserts the node in place and uses
         // If empty, just push back
         if (nodes.size()==0){
             nodes.push_back(node);
         } else {
             nodes.push_back(node);
+            cout << "Calling insort" << endl;
             inSort(&nodes);
         }
         return;
@@ -329,7 +334,7 @@ int main(){
     Node test_2 = Node(7);
     Node test_3 = Node(8);
     Node test_4 = Node(4);
-    Node test_5 = Node(1);
+    Node test_5 = Node(9);
     frontier.insert(&test_1);
     frontier.print();
     frontier.insert(&test_2);
