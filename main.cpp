@@ -94,34 +94,26 @@ public: // Public methods
 
 };
 
-void inSort(vector<Node*>*nodes) // Currently rearranges the elements's values rather then elements order
-{   
-    // Copy the vector of nodes as a local state
-    // Sort it
-    // Free the memory of the old nodes list
-    // return the new nodes list
-
-    
-    int n=(*nodes).size();
+void inSort(vector<Node*>*a) 
+{
+    int n = (*a).size();
     int i,j;
-    int k; 
-    for (i = 1; i < n; i++) 
-    {  
-        k = (*(*nodes)[i]).gcost;
-        Node original = Node((*(*nodes)[i]).state,(*(*nodes)[i]).coordinate,(*(*nodes)[i]).parent); // get a copy of the node at i
-        cout << "k" << k << endl; 
-        j = i - 1;  
-        /*Move elements of arr[0..i-1], that are  
-        greater than k, to one position ahead  
-        of their current position */
-        while (j >= 0 && (*(*nodes)[j]).gcost > k) 
-        {  
-            *((*nodes)[j + 1]) = *((*nodes)[j]); // switching variable's value at location in pq
-            j = j - 1;  
-        }  
-        cout << "j " << j << endl;
-        *((*nodes)[j + 1]) = k; // switching variable's value at location in pq
-    }  
+    int kcost;  
+    Node *temp;
+
+    for (int i=1;i<n;i++){
+        temp = ((*a)[i]);
+        kcost = (*((*a)[i])).gcost;
+        j = i-1;
+        while (j>=0 && (*((*a)[j])).gcost>kcost){ // gcost of node at j is greater than kcost
+            // set the current index in nodes node pointer to point to the address of the node in the prev index
+            (*a)[j+1] =  (*a)[j];
+            j = j - 1;
+        } 
+        // set the current element to be the temp
+        (*a)[j+1]=temp;
+    }
+    return;
 }
 
 class PriorityQueue{
@@ -145,15 +137,10 @@ public: // Public Methods
         return true;
     }
 
-    void insert(Node *node){ // Inserts the node in place and uses
+    void insert(Node *node){ // Inserts the node in sorted order using insertation sort
         // If empty, just push back
-        if (nodes.size()==0){
-            nodes.push_back(node);
-        } else {
-            nodes.push_back(node);
-            cout << "Calling insort" << endl;
-            inSort(&nodes);
-        }
+        nodes.push_back(node);
+        if (nodes.size()>1){inSort(&nodes);} // else, call insort on the nodes after pushing back
         return;
     }
 
@@ -328,7 +315,6 @@ int main(){
     // TESTING INSORT WITH NODES (includes double references)
     cout << "Testing insertation sort on frontier" << endl;
     PriorityQueue frontier = PriorityQueue();
-    vector<Node*> nodes;
     // Create null nodes with fake p_costs 
     Node test_1 = Node(10);
     Node test_2 = Node(7);

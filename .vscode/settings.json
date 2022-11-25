@@ -10,6 +10,9 @@
         "map": "cpp",
         "xutility": "cpp",
         "sstream": "cpp",
-        "cstdio": "cpp"
+        "cstdio": "cpp",
+        "initializer_list": "cpp",
+        "type_traits": "cpp",
+        "xtree": "cpp"
     }
 }
