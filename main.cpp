@@ -274,7 +274,7 @@ int main(){
     vector<int> R = getrendezvous(lines,N,dimensions);
     vector<vector<char>> board = getboard(lines,dimensions,N); // NOTE: Strings, need to convert for easy evaluation
 
-    // print the data here (conversion from py to cpp for setting up)
+    // print the input here (conversion from py to cpp for setting up)
     cout<<"Dimensions: "<<dimensions[0]<<" "<<dimensions[1]<<endl; // use printf
     cout<<"Number of Robots: "<<N<<endl;
     cout<<"Robots initial location: "<<endl;
@@ -290,53 +290,32 @@ int main(){
         board[coordinates[i][0]][coordinates[i][1]] = 'B';
     }
 
+    // print the goal state here
+    vector<vector<char>> goal = board;
+    // set the robot locations as 0 (bot) and the rendezvous as B for the goal state
+    goal[R[0]][R[1]] = 'B';
+    for (int i=0;i<coordinates.size();i++){
+        goal[coordinates[i][0]][coordinates[i][1]] = '0';
+    }    
+
+
     cout << "simulating A* on the first robot of the test:" << endl;
-    Node null_node = Node();
+    Node null_node = Node(); 
     Node initial = Node(board,coordinates[1],&null_node); // For the first initial node
-    Node test_node = Node(board,coordinates[1],&null_node);
+    cout << "Initial state of the first robot:" << endl;
     initial.print();
-    test_node.print();
-    cout << "Testing equals and contains" << endl;
-    cout << initial.equals(test_node.state) << endl;
-    cout << "Testing priority queue contains" << endl;
-    PriorityQueue pq = PriorityQueue();
-    cout << "Insert PQ" << endl;
-    pq.insert(&initial);
-    cout << "Contains PQ" << endl;
-    cout<< pq.contains(initial) << endl;
 
-    cout << "Expand" << endl;
-    expand(&initial);
-    cout << "Children" << endl;
-    for (int i=0;i<initial.children.size();i++){
-        initial.children[i].print();
-    }
-
-    // TESTING INSORT WITH NODES (includes double references)
-    cout << "Testing insertation sort on frontier" << endl;
+    // initialize the frontier with the initial state
     PriorityQueue frontier = PriorityQueue();
-    // Create null nodes with fake p_costs 
-    Node test_1 = Node(10);
-    Node test_2 = Node(7);
-    Node test_3 = Node(8);
-    Node test_4 = Node(4);
-    Node test_5 = Node(9);
-    frontier.insert(&test_1);
-    frontier.print();
-    frontier.insert(&test_2);
-    frontier.print();
-    frontier.insert(&test_3);
-    frontier.print();
-    frontier.insert(&test_4);
-    frontier.print();
-    frontier.insert(&test_5);
-    frontier.print();
-
-    // A* logic for this board
-    // Solve one robot at a time
-    // Add the robot to the board and keep track of its location (use a unique character to represent its location)
-    // define a goal state:
-        // the unique character representing the robot in the R location
+    frontier.insert(&initial);
+    // intialize the explored set as an empty vector of node's (by value)
+    vector<vector<Node>> explored;
+    // enter a while loop (terminates when the frontier is empty)
+    // assuming the frontier is not empty
+    // pop a node from the frontier (pq)
+    // check if the poped node equals the goal state vector (auto generated), if so, return explored set
+    // if not, add the node to the explored list
+    // expand the node and add its children to the forniter and the explored set (if they do not already contain the node)
 
     return 0;
 }
