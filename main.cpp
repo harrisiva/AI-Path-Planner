@@ -40,6 +40,12 @@ public: // Public methods
     // Default null constructor
     Node(){pcost=-1;return;}
 
+    // Default Place Holder Constructor (Used for testing insort)
+    Node(int u_gcost){
+        gcost = u_gcost;
+        return;
+    }
+
     // Default working constructor (Initialize the node with the given state, robot location/coordinate given)
     Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent){ 
         coordinate = u_coordinate;
@@ -136,10 +142,13 @@ public: // Public Methods
     }
 
     void insert(Node *node){ // TODO: Needs to insert and sort based on the g_cost
-        nodes.push_back(node);
-        // set the index based on the g_cost
-        // lowest g_cost at the front
-        // highest g_cost at the end
+        // If empty, just push back
+        if (nodes.size()==0){
+            nodes.push_back(node);
+        } else {
+            nodes.push_back(node);
+            inSort(&nodes);
+        }
         return;
     }
 
@@ -151,7 +160,10 @@ public: // Public Methods
         return first;
     }
 
-    void print(){ // TODO: Print the details and the nodes
+    void print(){ // TODO: Print the cost of each node in the nodes list
+        for (int i=0; i<nodes.size();i++){
+            cout << "(" << i << "): " << (*nodes[i]).gcost << ", ";
+        } cout << endl;
         return;
     }
 };
@@ -309,9 +321,26 @@ int main(){
     }
 
     // TESTING INSORT WITH NODES (includes double references)
+    cout << "Testing insertation sort on frontier" << endl;
+    PriorityQueue frontier = PriorityQueue();
     vector<Node*> nodes;
     // Create null nodes with fake p_costs 
-    
+    Node test_1 = Node(10);
+    Node test_2 = Node(7);
+    Node test_3 = Node(8);
+    Node test_4 = Node(4);
+    Node test_5 = Node(1);
+    frontier.insert(&test_1);
+    frontier.print();
+    frontier.insert(&test_2);
+    frontier.print();
+    frontier.insert(&test_3);
+    frontier.print();
+    frontier.insert(&test_4);
+    frontier.print();
+    frontier.insert(&test_5);
+    frontier.print();
+
     // A* logic for this board
     // Solve one robot at a time
     // Add the robot to the board and keep track of its location (use a unique character to represent its location)
