@@ -23,6 +23,15 @@ void viewboard(vector<vector<char>> board){
     } return;
 }
 
+int manhatanDistance(vector<int> R, vector<int> coordinate) {
+    // given the board/state (maybe you need the dimensions), the R coordinate, and the robots coordinate
+    // calcualte the manhatan distance from the robots coordinate to the R coordinate
+    int dist;
+    int xDis = coordinate[0] - R[0];
+    int yDis = coordinate[1] - R[1];
+    dist = abs(xDis + yDis);
+    return dist;
+}
 
 class Node{
 public: // Public variables
@@ -30,6 +39,7 @@ public: // Public variables
     vector<int> coordinate;
     Node *parent;
     vector<Node> children;
+    vector<int> R;
     // need to keep track of the costs as integers
     // pcost (cost evaluted from the parent)
     int pcost; int hcost; int gcost;
@@ -47,14 +57,15 @@ public: // Public methods
     }
 
     // Default working constructor (Initialize the node with the given state, robot location/coordinate given)
-    Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent){ 
+    Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent, vector<int> u_R){ 
         coordinate = u_coordinate;
         state = u_state;
         parent = u_parent;
         // calcualte and set the hcost
         // set the pcost as parent.p_cost + 1
         pcost = ((*parent).pcost)+1;
-        hcost = 0; // SET BY CALLING THE HEURISTIC FUNCTION
+        R = u_R;
+        hcost = manhatanDistance(R,coordinate); // SET BY CALLING THE HEURISTIC FUNCTION (requires R location as well)
         gcost = pcost + hcost;
         return;
     }
@@ -72,7 +83,7 @@ public: // Public methods
 
     void print(){
         viewboard(state);
-        cout << "p_cost:" << pcost << endl;
+        cout << "p_cost: " << pcost << " h_cost: " << hcost << " g_cost: " <<gcost << endl;
         return;
     }
 
@@ -145,10 +156,8 @@ public: // Public Methods
     }
 
     Node pop(){
-        cout << nodes.size() << endl;
         Node first = *nodes[0];
         nodes.erase(nodes.begin());
-        cout << nodes.size() << endl;
         return first;
     }
 
@@ -258,7 +267,7 @@ void expand(Node *initial){
         if (var_at_new_coordinate =='0' || var_at_new_coordinate=='R'){
             // create the new node and set the parent and children relation
             initial_clone.move(shift);
-            Node child = Node(initial_clone.state,initial_clone.coordinate,initial);
+            Node child = Node(initial_clone.state,initial_clone.coordinate,initial,initial_clone.R);
             (*initial).children.push_back(child);
         }
     } return;
@@ -300,8 +309,8 @@ int main(){
 
 
     cout << "simulating A* on the first robot of the test:" << endl;
-    Node null_node = Node(); 
-    Node initial = Node(board,coordinates[1],&null_node); // For the first initial node
+    Node null_node = Node(); // Null node will act as the parent node for the initial node and it is identified with -1
+    Node initial = Node(board,coordinates[1],&null_node,R); // For the first initial node
     cout << "Initial state of the first robot:" << endl;
     initial.print();
 
