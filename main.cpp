@@ -23,6 +23,15 @@ void viewboard(vector<vector<char>> board){
     } return;
 }
 
+int manhatanDistance(vector<int> R, vector<int> coordinate) {
+    // given the board/state (maybe you need the dimensions), the R coordinate, and the robots coordinate
+    // calcualte the manhatan distance from the robots coordinate to the R coordinate
+    int dist;
+    int xDis = coordinate[0] - R[0];
+    int yDis = coordinate[1] - R[1];
+    dist = abs(xDis + yDis);
+    return dist;
+}
 
 class Node{
 public: // Public variables
@@ -30,6 +39,7 @@ public: // Public variables
     vector<int> coordinate;
     Node *parent;
     vector<Node> children;
+    vector<int> R;
     // need to keep track of the costs as integers
     // pcost (cost evaluted from the parent)
     int pcost; int hcost; int gcost;
@@ -47,14 +57,15 @@ public: // Public methods
     }
 
     // Default working constructor (Initialize the node with the given state, robot location/coordinate given)
-    Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent){ 
+    Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent, vector<int> u_R){ 
         coordinate = u_coordinate;
         state = u_state;
         parent = u_parent;
         // calcualte and set the hcost
         // set the pcost as parent.p_cost + 1
         pcost = ((*parent).pcost)+1;
-        hcost = 0; // SET BY CALLING THE HEURISTIC FUNCTION
+        R = u_R;
+        hcost = manhatanDistance(R,coordinate); // SET BY CALLING THE HEURISTIC FUNCTION (requires R location as well)
         gcost = pcost + hcost;
         return;
     }
@@ -64,6 +75,9 @@ public: // Public methods
         int i = coordinate[0]+shift[0];
         int j = coordinate[1]+shift[1];
         state[i][j] = 'B';
+        if (val_at_shift_position=='R'){
+            val_at_shift_position='0';
+        }
         state[coordinate[0]][coordinate[1]]=val_at_shift_position;
         coordinate[0] = i;
         coordinate[1] = j;
@@ -72,7 +86,7 @@ public: // Public methods
 
     void print(){
         viewboard(state);
-        cout << "p_cost:" << pcost << endl;
+        cout << "p_cost: " << pcost << " h_cost: " << hcost << " g_cost: " <<gcost << endl;
         return;
     }
 
@@ -131,10 +145,11 @@ public: // Public Methods
     }
 
     bool contains(Node node){
+        bool contains_node = false;
         for (int i=0; i<nodes.size(); i++){
-            if (!(*nodes[i]).equals(node.state)){return false;}
+            if ((*nodes[i]).equals(node.state)){contains_node=true;}
         }
-        return true;
+        return contains_node;
     }
 
     void insert(Node *node){ // Inserts the node in sorted order using insertation sort
@@ -144,11 +159,9 @@ public: // Public Methods
         return;
     }
 
-    Node pop(){
-        cout << nodes.size() << endl;
-        Node first = *nodes[0];
+    Node* pop(){
+        Node *first = nodes[0];
         nodes.erase(nodes.begin());
-        cout << nodes.size() << endl;
         return first;
     }
 
@@ -258,7 +271,7 @@ void expand(Node *initial){
         if (var_at_new_coordinate =='0' || var_at_new_coordinate=='R'){
             // create the new node and set the parent and children relation
             initial_clone.move(shift);
-            Node child = Node(initial_clone.state,initial_clone.coordinate,initial);
+            Node child = Node(initial_clone.state,initial_clone.coordinate,initial,initial_clone.R);
             (*initial).children.push_back(child);
         }
     } return;
@@ -274,7 +287,7 @@ int main(){
     vector<int> R = getrendezvous(lines,N,dimensions);
     vector<vector<char>> board = getboard(lines,dimensions,N); // NOTE: Strings, need to convert for easy evaluation
 
-    // print the data here (conversion from py to cpp for setting up)
+    // print the input here (conversion from py to cpp for setting up)
     cout<<"Dimensions: "<<dimensions[0]<<" "<<dimensions[1]<<endl; // use printf
     cout<<"Number of Robots: "<<N<<endl;
     cout<<"Robots initial location: "<<endl;
@@ -290,53 +303,104 @@ int main(){
         board[coordinates[i][0]][coordinates[i][1]] = 'B';
     }
 
+
+    // NOTE: GOAL STATE CURRENTLY SET FOR ROBOT AT INDEX 1 NOT 0 OR MUTUAL
+    vector<vector<char>> goal = board;
+    cout << "Initial board:" << endl;
+    // set the given robots (TESTING WITH ONE) location as 0 (bot) and the rendezvous as B for the goal state
+    goal[R[0]][R[1]] = 'B';
+    goal[coordinates[1][0]][coordinates[1][1]] = '0';  
+
+
     cout << "simulating A* on the first robot of the test:" << endl;
-    Node null_node = Node();
-    Node initial = Node(board,coordinates[1],&null_node); // For the first initial node
-    Node test_node = Node(board,coordinates[1],&null_node);
+    Node null_node = Node(); // Null node will act as the parent node for the initial node and it is identified with -1
+    Node initial = Node(board,coordinates[1],&null_node,R); // For the first initial node
+    cout << "Initial state of the first robot:" << endl;
     initial.print();
-    test_node.print();
-    cout << "Testing equals and contains" << endl;
-    cout << initial.equals(test_node.state) << endl;
-    cout << "Testing priority queue contains" << endl;
-    PriorityQueue pq = PriorityQueue();
-    cout << "Insert PQ" << endl;
-    pq.insert(&initial);
-    cout << "Contains PQ" << endl;
-    cout<< pq.contains(initial) << endl;
 
-    cout << "Expand" << endl;
-    expand(&initial);
-    cout << "Children" << endl;
-    for (int i=0;i<initial.children.size();i++){
-        initial.children[i].print();
-    }
+    // // hand pick nodes to the goal and test if you get the right state
+    // // 9 moves total (8 nodes in the explored state + 1 for the goal)
+    // expand(&initial);
+    // Node node1 = initial.children[0];
+    // node1.print();
+    // expand(&node1);
+    // Node node2 = node1.children[0];
+    // node2.print();
+    // expand(&node2);
+    // Node node3 = node2.children[0];
+    // node3.print();
 
-    // TESTING INSORT WITH NODES (includes double references)
-    cout << "Testing insertation sort on frontier" << endl;
+    // // four to the left
+    // expand(&node3);
+    // Node node4 = node3.children[1];
+    // node4.print();
+    // expand(&node4);
+    // Node node5 = node4.children[2];
+    // node5.print();
+    // expand(&node5);
+    // Node node6 = node5.children[2];
+    // node6.print();
+    // expand(&node6);
+    // Node node7 = node6.children[1];
+    // node7.print();
+
+    // // two up
+    // expand(&node7);
+    // Node node8 = node7.children[0];
+    // node8.print();
+
+    // expand(&node8);
+    // Node node9 = node8.children[0];
+    // node9.print();
+
+
+    // initialize the frontier with the initial state
     PriorityQueue frontier = PriorityQueue();
-    // Create null nodes with fake p_costs 
-    Node test_1 = Node(10);
-    Node test_2 = Node(7);
-    Node test_3 = Node(8);
-    Node test_4 = Node(4);
-    Node test_5 = Node(9);
-    frontier.insert(&test_1);
-    frontier.print();
-    frontier.insert(&test_2);
-    frontier.print();
-    frontier.insert(&test_3);
-    frontier.print();
-    frontier.insert(&test_4);
-    frontier.print();
-    frontier.insert(&test_5);
-    frontier.print();
+    frontier.insert(&initial);
+    // intialize the explored set as an empty vector of node's (by value)
+    vector<Node> explored; // will contain the node, use .equals to check on each node    
 
-    // A* logic for this board
-    // Solve one robot at a time
-    // Add the robot to the board and keep track of its location (use a unique character to represent its location)
-    // define a goal state:
-        // the unique character representing the robot in the R location
+    bool found_goal = false;
+    Node *goal_node = &null_node;
+    while (frontier.nodes.size()>0){
+        // pop the front node
+        Node *node = frontier.pop();
+        // check if the current node==the goal state
+        if ((*node).equals(goal)){
+            goal_node = node;
+            found_goal = true;
+            break;
+        } else {
+            // expand the front node
+            expand(node);
+            explored.push_back((*node));
+            // check if children are in respective vectors, if not, push_back/insert
+            for (int i=0;i<(*node).children.size();i++){
+                // testing if explored set contains this node
+                bool explored_contains=false;
+                for (int j=0;j<explored.size();j++){
+                    if (explored[j].equals((*node).children[i].state)){
+                        explored_contains=true;
+                    }
+                }
+                if (explored_contains==false && frontier.contains((*node).children[i])==false){
+                    frontier.insert(&((*node).children[i]));
+                } 
+            }
+        }
+    }
+    if (found_goal){
+        // print the explored set and see the order
+        cout << "Found solution. Printing solution backwards" << endl;
+        int count = 0;
+        // go backward from the node
+        while ((*(*goal_node).parent).pcost!=-1){
+            (*goal_node).print();
+            goal_node = (*goal_node).parent;
+            count ++;
+        }
+        cout << "Moves: " << count;
 
+    }
     return 0;
 }
