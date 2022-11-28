@@ -75,6 +75,9 @@ public: // Public methods
         int i = coordinate[0]+shift[0];
         int j = coordinate[1]+shift[1];
         state[i][j] = 'B';
+        if (val_at_shift_position=='R'){
+            val_at_shift_position='0';
+        }
         state[coordinate[0]][coordinate[1]]=val_at_shift_position;
         coordinate[0] = i;
         coordinate[1] = j;
@@ -300,13 +303,13 @@ int main(){
         board[coordinates[i][0]][coordinates[i][1]] = 'B';
     }
 
-    // print the goal state here
+
+    // NOTE: GOAL STATE CURRENTLY SET FOR ROBOT AT INDEX 1 NOT 0 OR MUTUAL
     vector<vector<char>> goal = board;
-    // set the robot locations as 0 (bot) and the rendezvous as B for the goal state
+    cout << "Initial board:" << endl;
+    // set the given robots (TESTING WITH ONE) location as 0 (bot) and the rendezvous as B for the goal state
     goal[R[0]][R[1]] = 'B';
-    for (int i=0;i<coordinates.size();i++){
-        goal[coordinates[i][0]][coordinates[i][1]] = '0';
-    }    
+    goal[coordinates[1][0]][coordinates[1][1]] = '0';  
 
 
     cout << "simulating A* on the first robot of the test:" << endl;
@@ -315,13 +318,49 @@ int main(){
     cout << "Initial state of the first robot:" << endl;
     initial.print();
 
+    // // hand pick nodes to the goal and test if you get the right state
+    // // 9 moves total (8 nodes in the explored state + 1 for the goal)
+    // expand(&initial);
+    // Node node1 = initial.children[0];
+    // node1.print();
+    // expand(&node1);
+    // Node node2 = node1.children[0];
+    // node2.print();
+    // expand(&node2);
+    // Node node3 = node2.children[0];
+    // node3.print();
+
+    // // four to the left
+    // expand(&node3);
+    // Node node4 = node3.children[1];
+    // node4.print();
+    // expand(&node4);
+    // Node node5 = node4.children[2];
+    // node5.print();
+    // expand(&node5);
+    // Node node6 = node5.children[2];
+    // node6.print();
+    // expand(&node6);
+    // Node node7 = node6.children[1];
+    // node7.print();
+
+    // // two up
+    // expand(&node7);
+    // Node node8 = node7.children[0];
+    // node8.print();
+
+    // expand(&node8);
+    // Node node9 = node8.children[0];
+    // node9.print();
+
+
     // initialize the frontier with the initial state
     PriorityQueue frontier = PriorityQueue();
     frontier.insert(&initial);
     // intialize the explored set as an empty vector of node's (by value)
     vector<Node> explored; // will contain the node, use .equals to check on each node    
 
-    int count = 0;
+    bool found_goal = false;
     while (frontier.nodes.size()>0){
         // pop the front node
         Node *node = frontier.pop();
@@ -329,6 +368,7 @@ int main(){
         if ((*node).equals(goal)){
             cout<<"Node equals goal state:"<<endl;;
             (*node).print();
+            found_goal = true;
             break;
         } else {
             // expand the front node
@@ -341,18 +381,13 @@ int main(){
                 for (int j=0;j<explored.size();j++){
                     if (explored[j].equals((*node).children[i].state)){
                         explored_contains=true;
-                        cout << "Explored contains node " << i << endl;
                     }
                 }
                 if (explored_contains==false && frontier.contains((*node).children[i])==false){
-                    cout << "Node " << i << " not in either of the lists" << endl;
                     frontier.insert(&((*node).children[i]));
-                    cout << "Node " << i << " Added to frontier" << endl;
-                    frontier.print();
                 } 
             }
         }
     }
-    cout << "Goal state not found, frontier empty" << endl;
     return 0;
 }
