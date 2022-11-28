@@ -361,13 +361,13 @@ int main(){
     vector<Node> explored; // will contain the node, use .equals to check on each node    
 
     bool found_goal = false;
+    Node *goal_node = &null_node;
     while (frontier.nodes.size()>0){
         // pop the front node
         Node *node = frontier.pop();
         // check if the current node==the goal state
         if ((*node).equals(goal)){
-            cout<<"Node equals goal state:"<<endl;;
-            (*node).print();
+            goal_node = node;
             found_goal = true;
             break;
         } else {
@@ -388,6 +388,19 @@ int main(){
                 } 
             }
         }
+    }
+    if (found_goal){
+        // print the explored set and see the order
+        cout << "Found solution. Printing solution backwards" << endl;
+        int count = 0;
+        // go backward from the node
+        while ((*(*goal_node).parent).pcost!=-1){
+            (*goal_node).print();
+            goal_node = (*goal_node).parent;
+            count ++;
+        }
+        cout << "Moves: " << count;
+
     }
     return 0;
 }
