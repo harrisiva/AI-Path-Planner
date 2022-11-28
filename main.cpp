@@ -142,10 +142,11 @@ public: // Public Methods
     }
 
     bool contains(Node node){
+        bool contains_node = false;
         for (int i=0; i<nodes.size(); i++){
-            if (!(*nodes[i]).equals(node.state)){return false;}
+            if ((*nodes[i]).equals(node.state)){contains_node=true;}
         }
-        return true;
+        return contains_node;
     }
 
     void insert(Node *node){ // Inserts the node in sorted order using insertation sort
@@ -155,8 +156,8 @@ public: // Public Methods
         return;
     }
 
-    Node pop(){
-        Node first = *nodes[0];
+    Node* pop(){
+        Node *first = nodes[0];
         nodes.erase(nodes.begin());
         return first;
     }
@@ -318,13 +319,40 @@ int main(){
     PriorityQueue frontier = PriorityQueue();
     frontier.insert(&initial);
     // intialize the explored set as an empty vector of node's (by value)
-    vector<vector<Node>> explored;
-    // enter a while loop (terminates when the frontier is empty)
-    // assuming the frontier is not empty
-    // pop a node from the frontier (pq)
-    // check if the poped node equals the goal state vector (auto generated), if so, return explored set
-    // if not, add the node to the explored list
-    // expand the node and add its children to the forniter and the explored set (if they do not already contain the node)
+    vector<Node> explored; // will contain the node, use .equals to check on each node    
 
+    int count = 0;
+    while (frontier.nodes.size()>0){
+        // pop the front node
+        Node *node = frontier.pop();
+        // check if the current node==the goal state
+        if ((*node).equals(goal)){
+            cout<<"Node equals goal state:"<<endl;;
+            (*node).print();
+            break;
+        } else {
+            // expand the front node
+            expand(node);
+            explored.push_back((*node));
+            // check if children are in respective vectors, if not, push_back/insert
+            for (int i=0;i<(*node).children.size();i++){
+                // testing if explored set contains this node
+                bool explored_contains=false;
+                for (int j=0;j<explored.size();j++){
+                    if (explored[j].equals((*node).children[i].state)){
+                        explored_contains=true;
+                        cout << "Explored contains node " << i << endl;
+                    }
+                }
+                if (explored_contains==false && frontier.contains((*node).children[i])==false){
+                    cout << "Node " << i << " not in either of the lists" << endl;
+                    frontier.insert(&((*node).children[i]));
+                    cout << "Node " << i << " Added to frontier" << endl;
+                    frontier.print();
+                } 
+            }
+        }
+    }
+    cout << "Goal state not found, frontier empty" << endl;
     return 0;
 }
