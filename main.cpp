@@ -278,7 +278,12 @@ void expand(Node *initial){
 
         // get the variable at the new coordinate
         cout << "Atempting to get variable at new coordinate" << endl;
-        char var_at_new_coordinate = (*initial).state[new_i][new_j];
+        char var_at_new_coordinate = (*initial).state[new_i][new_j]; // LINE CAUSING BUG
+        // Need to:
+            // Check if the shift will lead to a position within the boundary of the box
+            // Write a function that performs this
+            // Need to see if the index after the shift fits into the row col places 
+            
         // check if the veriable is 0 or R, in all other cases, move not possible
         cout << "Var at new coordinate: "<< var_at_new_coordinate << endl;
         if (var_at_new_coordinate =='0' || var_at_new_coordinate=='R'){
