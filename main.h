@@ -1,6 +1,7 @@
 #ifdef MAIN_H
-#include <iostream>
-#include <vector>
-#include <string>
+#define MAIN_H
+
+
+
 
 #endif
