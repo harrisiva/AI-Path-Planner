@@ -275,7 +275,6 @@ void expand(Node *initial){
             char var_at_new_coordinate = (*initial).state[new_i][new_j];
             // check if the veriable is 0 or R, in all other cases, move not possible
             if (var_at_new_coordinate =='0' || var_at_new_coordinate=='R'){
-                cout << "Passed expand test" << endl;
                 // create the new node and set the parent and children relation
                 initial_clone.move(shift); // creat a move 
                 Node child = Node(initial_clone.state,initial_clone.coordinate,initial,initial_clone.R);
@@ -326,95 +325,69 @@ int main(){
     Node initial = Node(board,coordinates[1],&null_node,R); // For the first initial node
     cout << "Initial state of the first robot:" << endl;
     initial.print(); 
-    // no bugs with this part
 
+    // initialize the frontier as a PQ instance
+    PriorityQueue frontier = PriorityQueue();
+    frontier.insert(&initial); // add the intitial node to it
+    // intialize the explored set as an empty vector of node's (by value)
+    vector<Node> explored; // will contain the node, use .equals to check on each node    
 
-    cout << "Testing node causing bug" << endl;
-    vector<vector<char>> breakerState = {
-        {'1','0','0','0','R','0','0','0','0','1'},
-        {'1','1','0','0','0','0','0','0','1','1'},
-        {'0','0','0','0','0','0','0','0','0','0'},
-        {'1','0','0','0','1','1','0','0','0','1'},
-        {'1','0','0','1','1','1','1','0','0','1'},
-        {'0','0','B','1','1','1','1','0','0','0'},
-        {'0','0','0','0','1','1','0','0','0','0'},
-        {'1','1','B','0','0','0','0','0','1','1'}
-    };
-    Node breaker = Node(breakerState,{7,2},&null_node,R); // setup the node
-    breaker.print();
-    // Call expand and hope that it breaks the code since that means we identified the location of the bug
-    expand(&breaker);
-    breaker.children[0].print();
-    breaker.children[1].print();
+    bool found_goal = false;
+    Node *goal_node = &null_node; // initialized as null, returned at the end
 
-    // // initialize the frontier as a PQ instance
-    // PriorityQueue frontier = PriorityQueue();
-    // frontier.insert(&initial); // add the intitial node to it
-    // // intialize the explored set as an empty vector of node's (by value)
-    // vector<Node> explored; // will contain the node, use .equals to check on each node    
-    // // no bugs up untill this part
+    while (frontier.nodes.size()>0 && found_goal==false){ // done untill frontier is empty or goal state is found
+        Node *node = frontier.pop(); // pop the front node and store it as a pointer variable
 
-    // bool found_goal = false;
-    // Node *goal_node = &null_node; // initialized as null, returned at the end
-
-    // while (frontier.nodes.size()>0 && found_goal==false){ // done untill frontier is empty or goal state is found
-    //     cout << "-----------------" << endl;
-    //     frontier.print();
-    //     Node *node = frontier.pop(); // pop the front node and store it as a pointer variable
-
-    //     // check if the current node==the goal state
-    //     if ((*node).equals(goal)){
-    //         goal_node = node; // if true, set current node as the goal_node
-    //         found_goal = true;
-    //     } 
+        // check if the current node==the goal state
+        if ((*node).equals(goal)){
+            goal_node = node; // if true, set current node as the goal_node
+            found_goal = true;
+        } 
         
-    //     else {
-    //         cout << "calling expand" << endl;
-    //         (*node).print();
-    //         expand(node); // expand the current node
-    //         cout << "Expanded" << endl;
-    //         explored.push_back((*node)); // add the expanded node to the explored list
+        else {
+            expand(node); // expand the current node
+            explored.push_back((*node)); // add the expanded node to the explored list
 
-    //         // check if children are in respective vectors, if not, push_back/insert
+            // check if children are in respective vectors, if not, push_back/insert
 
-    //         for (int i=0;i<(*node).children.size();i++){
+            for (int i=0;i<(*node).children.size();i++){
 
-    //             // testing if explored set contains this node
+                // testing if explored set contains this node
 
-    //             bool explored_contains=false;
-    //             for (int j=0;j<explored.size();j++){ // iterate through the explored sets indexes
-    //                 if (explored[j].equals((*node).children[i].state)){ // check if the current node's child's state equals a node in the explored state
-    //                     explored_contains=true; // if true, set this as true
-    //                 }
-    //             }
+                bool explored_contains=false;
+                for (int j=0;j<explored.size();j++){ // iterate through the explored sets indexes
+                    if (explored[j].equals((*node).children[i].state)){ // check if the current node's child's state equals a node in the explored state
+                        explored_contains=true; // if true, set this as true
+                    }
+                }
 
-    //             if (explored_contains==false && frontier.contains((*node).children[i])==false){ // if the explored does not contain the current node's child, and the frontier does not contain the current node
-    //                 frontier.insert(&((*node).children[i])); // insert the current node's child by reference
-    //             } 
+                if (explored_contains==false && frontier.contains((*node).children[i])==false){ // if the explored does not contain the current node's child, and the frontier does not contain the current node
+                    frontier.insert(&((*node).children[i])); // insert the current node's child by reference
+                } 
 
-    //         }
+            }
 
-    //     }
-    // }
+        }
+    }
 
 
 
-    // // this chunk need not be fixed, it is not even executed when the buggy coordinates are given to the while loop
-    // if (found_goal){
-    //     // print the explored set and see the order
-    //     cout << "Found solution. Printing solution backwards" << endl;
-    //     int count = 0;
-    //     // go backward from the node
-    //     while ((*(*goal_node).parent).pcost!=-1){
-    //         (*goal_node).print();
-    //         goal_node = (*goal_node).parent;
-    //         count ++;
-    //     }
-    //     cout << "Moves: " << count;
+    // this chunk need not be fixed, it is not even executed when the buggy coordinates are given to the while loop
+    if (found_goal){
+        // print the explored set and see the order
+        cout << "Found solution. Printing solution backwards" << endl;
+        int count = 0;
+        // go backward from the node
+        while ((*(*goal_node).parent).pcost!=-1){
+            (*goal_node).print();
+            goal_node = (*goal_node).parent;
+            count ++;
+        }
+        cout << "Moves: " << count;
 
-    // } else {
-    //     cout << "Goal not found" << endl;
-    // }
+    } else {
+        cout << "Goal not found" << endl;
+    }
 
     return 0;
 }
