@@ -43,3 +43,15 @@
     // Node node10 = node9.children[2];
     // node10.print();
     // cout << node10.equals(goal) << endl;
+
+
+
+The state that breaks expand:
+1000R00001
+1100000011
+0000000000
+1000110001
+1001111001
+00B1111000
+0000110000
+11B0000011
