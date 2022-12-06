@@ -263,26 +263,33 @@ void expand(Node *initial){
 
     // to check if valid (and create a list of valif shifts), check if the val at shift is 0 or R, all other values are rejected
     for (int i=0;i<shifts.size();i++){ // for different shift options
+        cout << "i: " << i << endl;
         vector<int> shift = shifts[i]; // Grab the index shift
-
+        cout << "\tGrabbed current shift" << endl;
+        cout << "\tShift: "<< shift[0] << " " << shift [1] << endl;
         Node initial_clone = *initial; // get the pointer to the initial
-
+        cout << "\tCloned initial" << endl;
 
         // set the new indexes for the Bot (B)
         int new_i; int new_j;
         new_i = ((*initial).coordinate[0])+(shift[0]); 
         new_j= ((*initial).coordinate[1])+(shift[1]);
+        cout << "\tset the new indexes" << endl;
 
         // get the variable at the new coordinate
+        cout << "Atempting to get variable at new coordinate" << endl;
         char var_at_new_coordinate = (*initial).state[new_i][new_j];
         // check if the veriable is 0 or R, in all other cases, move not possible
+        cout << "Var at new coordinate: "<< var_at_new_coordinate << endl;
         if (var_at_new_coordinate =='0' || var_at_new_coordinate=='R'){
-            cout << "Passed new coordinate check for " << new_i << " " << new_j << endl;
+            cout << "\t\tPassed new coordinate check for " << new_i << " " << new_j << endl;
             // create the new node and set the parent and children relation
             initial_clone.move(shift); // creat a move 
             Node child = Node(initial_clone.state,initial_clone.coordinate,initial,initial_clone.R);
             (*initial).children.push_back(child);
-        } 
+        } else {
+            cout << "\t\tFailed check" << endl;
+        }
     }
     cout << "returning" << endl;
     return; // THIS POINT IS NOT ENTERED FOR THE STATE THAT BREAKS IT (FIXING THIS MIGHT FIX THE PROBLEM)
@@ -341,7 +348,12 @@ int main(){
         {'0','0','0','0','1','1','0','0','0','0'},
         {'1','1','B','0','0','0','0','0','1','1'}
     };
-    viewboard(breakerState);
+    Node breaker = Node(breakerState,{7,1},&null_node,R); // setup the node
+    breaker.print();
+
+    // Call expand and hope that it breaks the code since that means we identified the location of the bug
+    expand(&breaker); // DOES NOT EXIT, THIS IS THE NODE THAT BREAKS EVERYTHING
+    cout << "Expanded" << endl;
 
 
     // // initialize the frontier as a PQ instance
