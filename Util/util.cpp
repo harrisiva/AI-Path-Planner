@@ -29,7 +29,6 @@ vector<int> getdimensions(vector<string>lines){
 vector<int> cordconvert(vector<int> coordinate, vector<int> dimensions){
     int max_y; vector<int> convertedCord;
     max_y = dimensions[0]-1;
-
     convertedCord.push_back(max_y-coordinate[1]); // row 
     convertedCord.push_back(coordinate[0]); // keep x (col) the same as it is parallel
     return convertedCord;
@@ -40,14 +39,15 @@ map<int,vector<int>> getcoordinates(vector<string>lines,int N,vector<int> dimens
     map<int,vector<int>> coordinates; // to return
 
     vector<vector<int>> coordinatesVector; // create a temp coordinatesVector for initial access (is this faster?)
-    for(int r=N;r<N+N;r++){
+    
+    for(int r=2;r<=N+1;r++){ // LOCATION OF BUG // N is the number of robots and dimensions is the dimensinos of the frame in rows and cols
         stringstream strIn(lines[r]); vector<int> coordinate;
         // load the current lines coordinate into the internal coordinate vector
         while (!strIn.fail()){
             string line;
             strIn >> line;
             if (line.size()!=0){coordinate.push_back(stoi(line));}
-        } 
+        }
         coordinate = cordconvert(coordinate,dimensions);
         coordinatesVector.push_back(coordinate);// push the coordinate vector retrived from the current line to the coordinatesVector 
     }

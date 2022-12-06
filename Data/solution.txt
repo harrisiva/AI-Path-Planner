@@ -70,7 +70,7 @@ p_cost: 1 h_cost: 2 g_cost: 3
 00B0110000
 1100000011
 p_cost: 0 h_cost: 3 g_cost: 3
-Moves: 7 for bot #0
+Moves: 6 for bot #0
 
 1000B00001
 1100000011
@@ -171,5 +171,5 @@ p_cost: 1 h_cost: 3 g_cost: 4
 00B0110000
 1100000011
 p_cost: 0 h_cost: 4 g_cost: 4
-Moves: 10 for bot #1
+Moves: 9 for bot #1
 
