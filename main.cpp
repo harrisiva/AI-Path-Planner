@@ -261,18 +261,31 @@ vector<vector<char>> getboard(vector<string> lines, vector<int> dimensions, int 
 void expand(Node *initial){
     vector<vector<int>> valid_shifts;
     // to check if valid (and create a list of valif shifts), check if the val at shift is 0 or R, all other values are rejected
-    for (int i=0;i<shifts.size();i++){
-        vector<int> shift = shifts[i];
-        Node initial_clone = *initial;
-        int new_i; int new_j; 
+    cout << "\tIn expand" << endl;
+
+    for (int i=0;i<shifts.size();i++){ // for different shift options
+
+        vector<int> shift = shifts[i]; // Grab the index shift
+
+        Node initial_clone = *initial; // get the pointer to the initial
+
+
+        // set the new indexes for the Bot (B)
+        int new_i; int new_j;
         new_i = ((*initial).coordinate[0])+(shift[0]); 
         new_j= ((*initial).coordinate[1])+(shift[1]);
+
+        // get the variable at the new coordinate
         char var_at_new_coordinate = (*initial).state[new_i][new_j];
+        // check if the veriable is 0 or R, in all other cases, move not possible
         if (var_at_new_coordinate =='0' || var_at_new_coordinate=='R'){
             // create the new node and set the parent and children relation
-            initial_clone.move(shift);
+            cout << "\t\tCalled move for shift: " << shift[0] << "," << shift[1] << endl;
+            initial_clone.move(shift); // creat a move 
             Node child = Node(initial_clone.state,initial_clone.coordinate,initial,initial_clone.R);
             (*initial).children.push_back(child);
+        } else {
+            cout << "\tSkipped" << endl;
         }
     } return;
 }
@@ -309,8 +322,7 @@ int main(){
     cout << "Initial board:" << endl;
     // set the given robots (TESTING WITH ONE) location as 0 (bot) and the rendezvous as B for the goal state
     goal[R[0]][R[1]] = 'B';
-    goal[coordinates[1][0]][coordinates[1][1]] = '0';  
-
+    goal[coordinates[1][0]][coordinates[1][1]] = '0';  // testing with the second robot
 
     cout << "simulating A* on the first robot of the test:" << endl;
     Node null_node = Node(); // Null node will act as the parent node for the initial node and it is identified with -1
@@ -318,89 +330,99 @@ int main(){
     cout << "Initial state of the first robot:" << endl;
     initial.print();
 
-    // // hand pick nodes to the goal and test if you get the right state
-    // // 9 moves total (8 nodes in the explored state + 1 for the goal)
+    // hand pick nodes to the goal and test if you get the right state
+    // 9 moves total (8 nodes in the explored state + 1 for the goal)
     // expand(&initial);
-    // Node node1 = initial.children[0];
+    // Node node1 = initial.children[1]; // left=1
     // node1.print();
+
     // expand(&node1);
     // Node node2 = node1.children[0];
     // node2.print();
+    
     // expand(&node2);
     // Node node3 = node2.children[0];
     // node3.print();
 
-    // // four to the left
     // expand(&node3);
-    // Node node4 = node3.children[1];
+    // Node node4 = node3.children[0];
     // node4.print();
+
     // expand(&node4);
-    // Node node5 = node4.children[2];
+    // Node node5 = node4.children[0];
     // node5.print();
+
     // expand(&node5);
     // Node node6 = node5.children[2];
     // node6.print();
+
     // expand(&node6);
-    // Node node7 = node6.children[1];
+    // Node node7 = node6.children[0];
     // node7.print();
 
-    // // two up
     // expand(&node7);
     // Node node8 = node7.children[0];
     // node8.print();
 
+    // cout << "Size: " <<  node8.children.size() << endl;
     // expand(&node8);
-    // Node node9 = node8.children[0];
+    // cout << "Size: " <<  node8.children.size() << endl;
+    // Node node9 = node8.children[2];
     // node9.print();
 
+    // expand(&node9);
+    // Node node10 = node9.children[2];
+    // node10.print();
+    // cout << node10.equals(goal) << endl;
 
-    // initialize the frontier with the initial state
-    PriorityQueue frontier = PriorityQueue();
-    frontier.insert(&initial);
-    // intialize the explored set as an empty vector of node's (by value)
-    vector<Node> explored; // will contain the node, use .equals to check on each node    
 
-    bool found_goal = false;
-    Node *goal_node = &null_node;
-    while (frontier.nodes.size()>0){
-        // pop the front node
-        Node *node = frontier.pop();
-        // check if the current node==the goal state
-        if ((*node).equals(goal)){
-            goal_node = node;
-            found_goal = true;
-            break;
-        } else {
-            // expand the front node
-            expand(node);
-            explored.push_back((*node));
-            // check if children are in respective vectors, if not, push_back/insert
-            for (int i=0;i<(*node).children.size();i++){
-                // testing if explored set contains this node
-                bool explored_contains=false;
-                for (int j=0;j<explored.size();j++){
-                    if (explored[j].equals((*node).children[i].state)){
-                        explored_contains=true;
-                    }
-                }
-                if (explored_contains==false && frontier.contains((*node).children[i])==false){
-                    frontier.insert(&((*node).children[i]));
-                } 
-            }
-        }
-    }
-    if (found_goal){
-        // print the explored set and see the order
-        cout << "Found solution. Printing solution backwards" << endl;
-        int count = 0;
-        // go backward from the node
-        while ((*(*goal_node).parent).pcost!=-1){
-            (*goal_node).print();
-            goal_node = (*goal_node).parent;
-            count ++;
-        }
-        cout << "Moves: " << count;
+    // // initialize the frontier with the initial state
+    // PriorityQueue frontier = PriorityQueue();
+    // frontier.insert(&initial);
+    // // intialize the explored set as an empty vector of node's (by value)
+    // vector<Node> explored; // will contain the node, use .equals to check on each node    
 
-    }
+    // bool found_goal = false;
+    // Node *goal_node = &null_node;
+    // while (frontier.nodes.size()>0){
+    //     // pop the front node
+    //     Node *node = frontier.pop();
+    //     // check if the current node==the goal state
+    //     if ((*node).equals(goal)){
+    //         goal_node = node;
+    //         found_goal = true;
+    //         break;
+    //     } else {
+    //         // expand the front node
+    //         expand(node);
+    //         explored.push_back((*node));
+    //         // check if children are in respective vectors, if not, push_back/insert
+    //         for (int i=0;i<(*node).children.size();i++){
+    //             // testing if explored set contains this node
+    //             bool explored_contains=false;
+    //             for (int j=0;j<explored.size();j++){
+    //                 if (explored[j].equals((*node).children[i].state)){
+    //                     explored_contains=true;
+    //                 }
+    //             }
+    //             if (explored_contains==false && frontier.contains((*node).children[i])==false){
+    //                 frontier.insert(&((*node).children[i]));
+    //             } 
+    //         }
+    //     }
+    // }
+    // if (found_goal){
+    //     // print the explored set and see the order
+    //     cout << "Found solution. Printing solution backwards" << endl;
+    //     int count = 0;
+    //     // go backward from the node
+    //     while ((*(*goal_node).parent).pcost!=-1){
+    //         (*goal_node).print();
+    //         goal_node = (*goal_node).parent;
+    //         count ++;
+    //     }
+    //     cout << "Moves: " << count;
+
+    // }
     return 0;
 }
