@@ -36,11 +36,12 @@ int main(){
         goal[coordinates[i][0]][coordinates[i][1]] = '0';  // Set the second bot as 0 since that is how it will look in the goal state (this should be the ith bot)
 
         // Setup the initial 
-        cout << "simulating A* on the first robot of the test:" << endl;
+        cout << "simulating A*:" << endl;
         Node null_node = Node(); // Null node will act as the parent node for the initial node and it is identified with -1
         Node initial = Node(board,coordinates[i],&null_node,R); // For the first initial node
-        cout << "Initial state of the first robot:" << endl;
+        cout << "Initial state of the robot:" << endl;
         initial.print(); 
+        cout << endl;
 
         // initialize the frontier as a PQ instance
         PriorityQueue frontier = PriorityQueue(); 
@@ -65,6 +66,8 @@ int main(){
             cout << "Goal not found" << endl;
         }
     }
+
+    // TODO: Store the solution and write it a text file
 
     return 0;
 }
