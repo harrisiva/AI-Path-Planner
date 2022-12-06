@@ -68,6 +68,11 @@ int main(){
     }
 
     // TODO: Store the solution and write it a text file
+    // for each robot, write the solution to a text file
+    // Tracing from the initial node to the goal node
+    // Write the node to a text file (append lines)
+    // append a new line character at the end of it
+    // Extend/Mimic the print functionality to write to the file
 
     return 0;
 }
