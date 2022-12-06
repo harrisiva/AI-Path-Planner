@@ -13,10 +13,12 @@
 #include "AI/astar.hpp"
 using namespace std;
 
+// Order the bots depending on their location (sometimes they can be in row, need to let the one blocking the exit first followed by the next and so on)
+
 int main(){
 
     // General program variables
-    string solution_filename = "solution.txt";
+    string solution_filename = "Data/solution.txt";
     // Clear the solution file if one exists, else create a emtpy one
     ifstream w_file;
     w_file.open(solution_filename, std::ifstream::trunc | std::ifstream::out);
@@ -74,12 +76,12 @@ int main(){
                 (*goal_node) = *((*goal_node)).parent;
                 count ++;
             }
-            cout << "Moves: " << count << " for bot #" << i << endl << endl;
+            cout << "Moves: " << count-1 << " for bot #" << i << endl << endl;
             // Write the moves to the file and go up one
             file.open(solution_filename,ios_base::app);
             // write the initial node
             initial.write(solution_filename);
-            file<< "Moves: " << count << " for bot #" << i << endl << endl;
+            file<< "Moves: " << count-1 << " for bot #" << i << endl << endl;
             file.close(); // close the solution file
             
         } else {
