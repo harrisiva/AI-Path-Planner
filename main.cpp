@@ -5,6 +5,8 @@
 #include <fstream>
 #include <map>
 #include <sstream>
+#include <iomanip> // for file writing
+
 #include "Util/util.hpp"
 #include "Node/node.hpp"
 #include "PriorityQueue/pq.hpp"
@@ -13,6 +15,16 @@ using namespace std;
 
 int main(){
 
+    // General program variables
+    string solution_filename = "solution.txt";
+    // Clear the solution file if one exists, else create a emtpy one
+    ifstream w_file;
+    w_file.open(solution_filename, std::ifstream::trunc | std::ifstream::out);
+    w_file.close();
+
+    // Create writing stream file
+    ofstream file;
+    
     // Load input into appropriate variables
     string filename="Data/input.txt";
     vector<string> lines = getlines(filename);
@@ -28,7 +40,8 @@ int main(){
         board[coordinates[i][0]][coordinates[i][1]] = 'B'; // set B at its location for both the robots
     }
 
-    // FOR EACH BOT
+    // clean solution text file
+
     for (int i=0;i<coordinates.size();i++){
         // Setup the goal state (derived from board and make changes based on the current robot that you are moving)
         vector<vector<char>> goal = board;
@@ -57,22 +70,22 @@ int main(){
             // go backward from the node
             while ((*((*goal_node).parent)).pcost!=-1){
                 (*goal_node).print();
+                (*goal_node).write(solution_filename);
                 (*goal_node) = *((*goal_node)).parent;
                 count ++;
             }
-            cout << "Moves: " << count << endl << endl;
-
+            cout << "Moves: " << count << " for bot #" << i << endl << endl;
+            // Write the moves to the file and go up one
+            file.open(solution_filename,ios_base::app);
+            // write the initial node
+            initial.write(solution_filename);
+            file<< "Moves: " << count << " for bot #" << i << endl << endl;
+            file.close(); // close the solution file
+            
         } else {
             cout << "Goal not found" << endl;
         }
     }
-
-    // TODO: Store the solution and write it a text file
-    // for each robot, write the solution to a text file
-    // Tracing from the initial node to the goal node
-    // Write the node to a text file (append lines)
-    // append a new line character at the end of it
-    // Extend/Mimic the print functionality to write to the file
 
     return 0;
 }

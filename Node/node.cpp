@@ -47,6 +47,25 @@ void Node::print(){
     return;
 }
 
+void Node::write(string filename){
+    ofstream file;
+    file.open(filename,ios_base::app);
+
+    // viewboard logic but with writing instead of cout
+    for (int i=0;i<state.size();i++){
+        for (int j=0;j<state[i].size();j++){
+            file << state[i][j];
+        }
+        file << endl;
+    }
+
+    // print line here but with write
+    file << "p_cost: " << pcost << " h_cost: " << hcost << " g_cost: " <<gcost << endl;
+    
+    file.close(); 
+    return;
+}
+
 bool Node::equals(vector<vector<char>> u_state){
     if (state.size()==u_state.size()){ // If the size of the state is the same
         for (int i=0;i<state.size();i++){

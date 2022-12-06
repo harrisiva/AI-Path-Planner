@@ -8,6 +8,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
+#include <iomanip>
 #include "../Util/util.hpp"
 using namespace std;
 
@@ -27,6 +28,7 @@ public:
     Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent, vector<int> u_R);
     void move(vector<int>shift);
     void print();
+    void write(string filename);
     bool equals(vector<vector<char>> u_state);
 
 };
