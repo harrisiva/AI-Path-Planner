@@ -8,8 +8,8 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include "util.hpp"
-#include "node.hpp"
+#include "../Util/util.hpp"
+#include "../Node/node.hpp"
 using namespace std;
 
 

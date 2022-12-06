@@ -1,5 +1,4 @@
 #include "node.hpp"
-#include "util.hpp"
 
 vector<vector<int>> shifts = {
     {-1,0}, // up
