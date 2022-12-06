@@ -261,8 +261,6 @@ vector<vector<char>> getboard(vector<string> lines, vector<int> dimensions, int 
 void expand(Node *initial){
     vector<vector<int>> valid_shifts;
     // to check if valid (and create a list of valif shifts), check if the val at shift is 0 or R, all other values are rejected
-    cout << "\tIn expand" << endl;
-
     for (int i=0;i<shifts.size();i++){ // for different shift options
 
         vector<int> shift = shifts[i]; // Grab the index shift
@@ -280,13 +278,10 @@ void expand(Node *initial){
         // check if the veriable is 0 or R, in all other cases, move not possible
         if (var_at_new_coordinate =='0' || var_at_new_coordinate=='R'){
             // create the new node and set the parent and children relation
-            cout << "\t\tCalled move for shift: " << shift[0] << "," << shift[1] << endl;
             initial_clone.move(shift); // creat a move 
             Node child = Node(initial_clone.state,initial_clone.coordinate,initial,initial_clone.R);
             (*initial).children.push_back(child);
-        } else {
-            cout << "\tSkipped" << endl;
-        }
+        } 
     } return;
 }
 
@@ -330,99 +325,67 @@ int main(){
     cout << "Initial state of the first robot:" << endl;
     initial.print();
 
-    // hand pick nodes to the goal and test if you get the right state
-    // 9 moves total (8 nodes in the explored state + 1 for the goal)
-    // expand(&initial);
-    // Node node1 = initial.children[1]; // left=1
-    // node1.print();
+    // initialize the frontier as a PQ instance
+    PriorityQueue frontier = PriorityQueue();
+    frontier.insert(&initial); // add the intitial node to it
+    // intialize the explored set as an empty vector of node's (by value)
+    vector<Node> explored; // will contain the node, use .equals to check on each node    
 
-    // expand(&node1);
-    // Node node2 = node1.children[0];
-    // node2.print();
-    
-    // expand(&node2);
-    // Node node3 = node2.children[0];
-    // node3.print();
+    bool found_goal = false;
+    Node *goal_node = &null_node; // initialized as null, returned at the end
 
-    // expand(&node3);
-    // Node node4 = node3.children[0];
-    // node4.print();
+    while (frontier.nodes.size()>0 && found_goal==false){ // done untill frontier is empty
 
-    // expand(&node4);
-    // Node node5 = node4.children[0];
-    // node5.print();
+        Node *node = frontier.pop(); // pop the front node and store it as a pointer variable
 
-    // expand(&node5);
-    // Node node6 = node5.children[2];
-    // node6.print();
+        // check if the current node==the goal state
+        if ((*node).equals(goal)){
+            goal_node = node; // if true, set current node as the goal_node
+            found_goal = true;
+        } 
+        
+        else {
 
-    // expand(&node6);
-    // Node node7 = node6.children[0];
-    // node7.print();
+            expand(node); // expand the current node
+            explored.push_back((*node)); // add the expanded node to the explored list
 
-    // expand(&node7);
-    // Node node8 = node7.children[0];
-    // node8.print();
+            // check if children are in respective vectors, if not, push_back/insert
 
-    // cout << "Size: " <<  node8.children.size() << endl;
-    // expand(&node8);
-    // cout << "Size: " <<  node8.children.size() << endl;
-    // Node node9 = node8.children[2];
-    // node9.print();
+            for (int i=0;i<(*node).children.size();i++){
 
-    // expand(&node9);
-    // Node node10 = node9.children[2];
-    // node10.print();
-    // cout << node10.equals(goal) << endl;
+                // testing if explored set contains this node
 
+                bool explored_contains=false;
+                for (int j=0;j<explored.size();j++){ // iterate through the explored sets indexes
+                    if (explored[j].equals((*node).children[i].state)){ // check if the current node's child's state equals a node in the explored state
+                        explored_contains=true; // if true, set this as true
+                    }
+                }
 
-    // // initialize the frontier with the initial state
-    // PriorityQueue frontier = PriorityQueue();
-    // frontier.insert(&initial);
-    // // intialize the explored set as an empty vector of node's (by value)
-    // vector<Node> explored; // will contain the node, use .equals to check on each node    
+                if (explored_contains==false && frontier.contains((*node).children[i])==false){ // if the explored does not contain the current node's child, and the frontier does not contain the current node
+                    frontier.insert(&((*node).children[i])); // insert the current node's child by reference
+                } 
 
-    // bool found_goal = false;
-    // Node *goal_node = &null_node;
-    // while (frontier.nodes.size()>0){
-    //     // pop the front node
-    //     Node *node = frontier.pop();
-    //     // check if the current node==the goal state
-    //     if ((*node).equals(goal)){
-    //         goal_node = node;
-    //         found_goal = true;
-    //         break;
-    //     } else {
-    //         // expand the front node
-    //         expand(node);
-    //         explored.push_back((*node));
-    //         // check if children are in respective vectors, if not, push_back/insert
-    //         for (int i=0;i<(*node).children.size();i++){
-    //             // testing if explored set contains this node
-    //             bool explored_contains=false;
-    //             for (int j=0;j<explored.size();j++){
-    //                 if (explored[j].equals((*node).children[i].state)){
-    //                     explored_contains=true;
-    //                 }
-    //             }
-    //             if (explored_contains==false && frontier.contains((*node).children[i])==false){
-    //                 frontier.insert(&((*node).children[i]));
-    //             } 
-    //         }
-    //     }
-    // }
-    // if (found_goal){
-    //     // print the explored set and see the order
-    //     cout << "Found solution. Printing solution backwards" << endl;
-    //     int count = 0;
-    //     // go backward from the node
-    //     while ((*(*goal_node).parent).pcost!=-1){
-    //         (*goal_node).print();
-    //         goal_node = (*goal_node).parent;
-    //         count ++;
-    //     }
-    //     cout << "Moves: " << count;
+            }
 
-    // }
+        }
+    }
+
+    if (found_goal){
+        // print the explored set and see the order
+        cout << "Found solution. Printing solution backwards" << endl;
+        int count = 0;
+        // go backward from the node
+        while ((*(*goal_node).parent).pcost!=-1){
+            (*goal_node).print();
+            goal_node = (*goal_node).parent;
+            count ++;
+        }
+        cout << "Moves: " << count;
+
+    } else {
+        cout << "Goal not found" << endl;
+    }
+
     return 0;
 }
