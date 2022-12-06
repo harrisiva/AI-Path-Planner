@@ -173,7 +173,6 @@ public: // Public Methods
     }
 };
 
-
 vector<string> getlines(string filename){
     // read the file lines by opening the file object
     vector<string> lines;
@@ -317,7 +316,7 @@ int main(){
     cout << "Initial board:" << endl;
     // set the given robots (TESTING WITH ONE) location as 0 (bot) and the rendezvous as B for the goal state
     goal[R[0]][R[1]] = 'B';
-    goal[coordinates[1][0]][coordinates[1][1]] = '0';  // testing with the second robot
+    goal[coordinates[1][0]][coordinates[1][1]] = '0';  // Set the second bot as 0 for now in the goal board
 
     // Setup the initial node 
     cout << "simulating A* on the first robot of the test:" << endl;

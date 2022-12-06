@@ -91,3 +91,13 @@ void viewboard(vector<vector<char>> board){
         cout<<endl;
     } return;
 }
+
+int manhatanDistance(vector<int> R, vector<int> coordinate) {
+    // given the board/state (maybe you need the dimensions), the R coordinate, and the robots coordinate
+    // calcualte the manhatan distance from the robots coordinate to the R coordinate
+    int dist;
+    int xDis = coordinate[0] - R[0];
+    int yDis = coordinate[1] - R[1];
+    dist = abs(xDis + yDis);
+    return dist;
+}

@@ -18,4 +18,6 @@ map<int,vector<int>> getcoordinates(vector<string>lines,int N,vector<int> dimens
 vector<int>getrendezvous(vector<string>lines,int N, vector<int> dimensions);
 vector<vector<char>> getboard(vector<string> lines, vector<int> dimensions, int N);
 void viewboard(vector<vector<char>> board);
+int manhatanDistance(vector<int> R, vector<int> coordinate);
+
 #endif
