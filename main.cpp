@@ -28,7 +28,7 @@ int main(){
     ofstream file;
     
     // Load input into appropriate variables
-    string filename="Data/input.txt";
+    string filename="Data/input_2.txt";
     vector<string> lines = getlines(filename);
     vector<int> dimensions = getdimensions(lines);  
     int N; N=stoi(lines[1]); // get the number of robots
@@ -43,7 +43,7 @@ int main(){
     }
 
     // clean solution text file
-
+    cout << "simulating A*:" << endl;
     for (int i=0;i<coordinates.size();i++){
         // Setup the goal state (derived from board and make changes based on the current robot that you are moving)
         vector<vector<char>> goal = board;
@@ -51,12 +51,8 @@ int main(){
         goal[coordinates[i][0]][coordinates[i][1]] = '0';  // Set the second bot as 0 since that is how it will look in the goal state (this should be the ith bot)
 
         // Setup the initial 
-        cout << "simulating A*:" << endl;
         Node null_node = Node(); // Null node will act as the parent node for the initial node and it is identified with -1
         Node initial = Node(board,coordinates[i],&null_node,R); // For the first initial node
-        cout << "Initial state of the robot:" << endl;
-        initial.print(); 
-        cout << endl;
 
         // initialize the frontier as a PQ instance
         PriorityQueue frontier = PriorityQueue(); 
@@ -76,12 +72,13 @@ int main(){
                 (*goal_node) = *((*goal_node)).parent;
                 count ++;
             }
-            cout << "Moves: " << count-1 << " for bot #" << i << endl << endl;
+            initial.print();
+            cout << "Moves: " << count-1 << " for bot #" << i << " located at " << coordinates[i][0] << "," << coordinates[i][1] << endl << endl;
             // Write the moves to the file and go up one
             file.open(solution_filename,ios_base::app);
             // write the initial node
             initial.write(solution_filename);
-            file<< "Moves: " << count-1 << " for bot #" << i << endl << endl;
+            file<< "Moves: " << count-1 << " for bot #" << i << " located at " << coordinates[i][0] << "," << coordinates[i][1] << endl << endl;
             file.close(); // close the solution file
             
         } else {
