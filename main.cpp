@@ -28,7 +28,7 @@ int main(){
     ofstream file;
     
     // Load input into appropriate variables
-    string filename="Data/input_2.txt";
+    string filename="Data/input.txt";
     vector<string> lines = getlines(filename);
     vector<int> dimensions = getdimensions(lines);  
     int N; N=stoi(lines[1]); // get the number of robots
@@ -51,8 +51,9 @@ int main(){
         goal[coordinates[i][0]][coordinates[i][1]] = '0';  // Set the second bot as 0 since that is how it will look in the goal state (this should be the ith bot)
 
         // Setup the initial 
+        string initial_move = "Null";
         Node null_node = Node(); // Null node will act as the parent node for the initial node and it is identified with -1
-        Node initial = Node(board,coordinates[i],&null_node,R); // For the first initial node
+        Node initial = Node(board,coordinates[i],&null_node,R, initial_move); // For the first initial node
 
         // initialize the frontier as a PQ instance
         PriorityQueue frontier = PriorityQueue(); 

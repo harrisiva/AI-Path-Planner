@@ -14,7 +14,7 @@ Node::Node(int u_gcost){
     return;
 }
 
-Node::Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent, vector<int> u_R){ 
+Node::Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent, vector<int> u_R, string u_made_move){ 
     coordinate = u_coordinate;
     state = u_state;
     parent = u_parent;
@@ -24,6 +24,7 @@ Node::Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent
     R = u_R;
     hcost = manhatanDistance(R,coordinate); // SET BY CALLING THE HEURISTIC FUNCTION (requires R location as well)
     gcost = pcost + hcost;
+    made_move = u_made_move;
     return;
 }
 
@@ -51,16 +52,16 @@ void Node::write(string filename){
     ofstream file;
     file.open(filename,ios_base::app);
 
-    // viewboard logic but with writing instead of cout
-    for (int i=0;i<state.size();i++){
-        for (int j=0;j<state[i].size();j++){
-            file << state[i][j];
-        }
-        file << endl;
-    }
+    // // viewboard logic but with writing instead of cout
+    // for (int i=0;i<state.size();i++){
+    //     for (int j=0;j<state[i].size();j++){
+    //         file << state[i][j];
+    //     }
+    //     file << endl;
+    // }
 
     // print line here but with write
-    file << "p_cost: " << pcost << " h_cost: " << hcost << " g_cost: " <<gcost << endl;
+    file << "Move: " << made_move << " p_cost: " << pcost << " h_cost: " << hcost << " g_cost: " <<gcost << " Coordinate " << coordinate[0]<<","<<coordinate[1]<< endl;
     
     file.close(); 
     return;
@@ -98,8 +99,19 @@ void expand(Node *initial){
             // check if the veriable is 0 or R, in all other cases, move not possible
             if (var_at_new_coordinate =='0' || var_at_new_coordinate=='R'){
                 // create the new node and set the parent and children relation
-                initial_clone.move(shift); // creat a move 
-                Node child = Node(initial_clone.state,initial_clone.coordinate,initial,initial_clone.R);
+                string made_move;
+                initial_clone.move(shift); // create a move 
+                if (shift[0]==-1 && shift[1]==0){
+                    made_move="Up";
+                } else if (shift[0]==+1 && shift[1]==0){
+                    made_move="Down";
+                } else if (shift[0]==0 && shift[1]==-1){
+                    made_move="Left";
+                } else {
+                    made_move="Right";
+                }
+            
+                Node child = Node(initial_clone.state,initial_clone.coordinate,initial,initial_clone.R,made_move); // also store the associated move
                 (*initial).children.push_back(child);
             } 
         }

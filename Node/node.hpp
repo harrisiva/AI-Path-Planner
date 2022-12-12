@@ -20,12 +20,13 @@ public:
     vector<Node> children;
     vector<int> R;
     int pcost; int hcost; int gcost;
+    string made_move;
 
 public: 
 
     Node();
     Node(int u_gcost);
-    Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent, vector<int> u_R);
+    Node(vector<vector<char>>u_state, vector<int> u_coordinate, Node *u_parent, vector<int> u_R, string u_made_move);
     void move(vector<int>shift);
     void print();
     void write(string filename);
