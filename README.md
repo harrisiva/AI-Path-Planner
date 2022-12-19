@@ -23,7 +23,7 @@ There are four main components: Util, Node, Priority Queue,
 and A-star. Each of these components follows the single
 responsibility principle. To derive the solution, these
 components interact with each other as well as the main
-module following the order presented in figure 2.
+module.
 
 
 ---
